@@ -11,6 +11,8 @@ if __name__ == "__main__":
     uav.move(Position(68, 75))
     uav.move(Position(95, 95))
 
+    print(uav.calculate_traveled_distance())
+
     points = [
         MapObject(57, 40, 10, MapObjectType.OBSTACLE),
         MapObject(84, 20, 6, MapObjectType.OBSTACLE),
