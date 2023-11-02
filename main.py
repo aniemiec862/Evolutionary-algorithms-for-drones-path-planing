@@ -11,7 +11,13 @@ if __name__ == "__main__":
     uav.move(Position(68, 75))
     uav.move(Position(95, 95))
 
-    print(uav.calculate_traveled_distance())
+    uav2 = UAV(Position(3, 3))
+    uav2.move(Position(20, 5))
+    uav2.move(Position(40, 8))
+    uav2.move(Position(58, 21))
+    uav2.move(Position(75, 38))
+    uav2.move(Position(87, 59))
+    uav2.move(Position(90, 65))
 
     points = [
         MapObject(57, 40, 10, MapObjectType.OBSTACLE),
@@ -26,4 +32,4 @@ if __name__ == "__main__":
     ]
 
     my_map = Map(100, 100, points)
-    my_map.visualize([uav])
+    my_map.visualize([uav, uav2])

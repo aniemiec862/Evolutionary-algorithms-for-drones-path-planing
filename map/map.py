@@ -43,7 +43,7 @@ class Map:
         for point in self.points:
             color = color_mapping[point.get_type()]
             x, y, point_type = point.x, point.y, point.get_type()
-            circle = plt.Circle((x, y), point.radius, color=color, fill=True)
+            circle = plt.Circle((x, y), point.radius, color=color, fill=True, alpha=0.5)
             ax.add_artist(circle)
 
         for uav in uavs:
@@ -52,15 +52,14 @@ class Map:
                 x, y = zip(*[(move.x, move.y) for move in moves])
                 plt.plot(x, y, marker='o', linestyle='-', markersize=5, linewidth=3.0,
                          label='UAV Path', color=color_mapping[MapObjectType.UAV])
+                distance = uav.calculate_traveled_distance()
+                plt.text(x[-1], y[-1], f"Traveled: {int(distance)}m", fontsize=10, color='black', ha='left', va='bottom')
 
         plt.xlim(0, self.width)
         plt.ylim(0, self.height)
         plt.gca().invert_yaxis()
 
-        plt.xlabel("X")
-        plt.ylabel("Y")
         plt.grid(True)
-
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)
 
         plt.show()
