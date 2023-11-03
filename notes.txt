@@ -1,0 +1,10 @@
+Obstacle avoidance - coded as keeping a set distance from the obstacles
+
+#avoidance_angle: The angle at which the UAV should steer to avoid the obstacle.
+#deceleration_factor: A value representing how much the UAV should slow down when an obstacle is detected.
+#side_movement: A parameter that determines whether the UAV should move left or right to avoid the obstacle.
+#Minimum Safe Distance: Gene specifying the minimum safe distance that the UAV should maintain from obstacles. It can be used to determine when to initiate avoidance maneuvers.
+#Collision Tolerance: Gene representing the acceptable level of collision risk the UAV is willing to take when avoiding obstacles. Lower values prioritize safety over speed.
+
+
+
