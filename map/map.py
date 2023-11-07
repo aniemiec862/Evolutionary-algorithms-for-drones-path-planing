@@ -1,26 +1,6 @@
-from enum import Enum
+from entities.MapObject import MapObjectType, MapObject
 from uav.uav import UAV
 import matplotlib.pyplot as plt
-
-
-class MapObjectType(Enum):
-    START = 0
-    OBJECTIVE = 1
-    OBSTACLE = 2
-    UAV = 3
-
-class MapObject:
-    def __init__(self, x: int, y: int, radius: int, type: MapObjectType):
-        self.x = x
-        self.y = y
-        self.radius = radius
-        self.type = type
-
-    def set_type(self, new_type: MapObjectType):
-        self.type = new_type
-
-    def get_type(self):
-        return self.type
 
 class Map:
     def __init__(self, width: int, height: int, init_points: list[MapObject]):
@@ -42,7 +22,7 @@ class Map:
 
         for point in self.points:
             color = color_mapping[point.get_type()]
-            x, y, point_type = point.x, point.y, point.get_type()
+            x, y = point.position.x, point.position.y
             circle = plt.Circle((x, y), point.radius, color=color, fill=True, alpha=0.5)
             ax.add_artist(circle)
 
