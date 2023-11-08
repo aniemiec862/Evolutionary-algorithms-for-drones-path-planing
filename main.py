@@ -11,7 +11,7 @@ if __name__ == "__main__":
         MapObject(Point2d(500, 500), 100, MapObjectType.OBSTACLE),
         MapObject(Point2d(840, 200), 60, MapObjectType.OBSTACLE),
         MapObject(Point2d(400, 150), 50, MapObjectType.OBSTACLE),
-        MapObject(Point2d(180, 360), 120, MapObjectType.OBSTACLE),
+        MapObject(Point2d(180, 320), 120, MapObjectType.OBSTACLE),
         MapObject(Point2d(200, 800), 150, MapObjectType.OBSTACLE),
         MapObject(Point2d(500, 550), 80, MapObjectType.OBSTACLE),
         MapObject(Point2d(850, 700), 70, MapObjectType.OBSTACLE)

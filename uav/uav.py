@@ -26,32 +26,27 @@ class UAV:
         angle_increase_value = 5
         default_turn_angle = 5
         self.angle = self.stabilize_angle()
-        print(self.angle)
 
         new_position = self.calculate_new_position()
 
         while not self.validate_can_move_to_position(new_position):
-            print("DEFAULT", default_turn_angle)
             current_angle = self.angle
             self.angle = self.turn("left", default_turn_angle)
             new_position = self.calculate_new_position()
             if self.validate_can_move_to_position(new_position):
                 break
-            print("LEFT", new_position.x, new_position.y, self.angle)
 
             self.angle = current_angle
             self.angle = self.turn("right", default_turn_angle)
             new_position = self.calculate_new_position()
             if self.validate_can_move_to_position(new_position):
                 break
-            print("RIGHT", new_position.x, new_position.y, self.angle)
 
             self.angle = current_angle
             default_turn_angle += angle_increase_value
 
         self.current_position = new_position
         self.moves.append(new_position)
-        print(self.current_position.x, self.current_position.y, self.angle)
 
     def calculate_new_position(self):
         new_x = self.current_position.x + self.velocity * cos(radians(self.angle))
