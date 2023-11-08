@@ -23,34 +23,57 @@ class UAV:
         self.current_position = position
 
     def move(self):
+        angle_increase_value = 5
+        default_turn_angle = 5
+        self.angle = self.stabilize_angle()
+        print(self.angle)
+
         new_position = self.calculate_new_position()
 
-        while self.validate_can_move_to_position(new_position):
-            #todo try turning left and right until can move
+        while not self.validate_can_move_to_position(new_position):
+            print("DEFAULT", default_turn_angle)
+            current_angle = self.angle
+            self.angle = self.turn("left", default_turn_angle)
             new_position = self.calculate_new_position()
+            if self.validate_can_move_to_position(new_position):
+                break
+            print("LEFT", new_position.x, new_position.y, self.angle)
+
+            self.angle = current_angle
+            self.angle = self.turn("right", default_turn_angle)
+            new_position = self.calculate_new_position()
+            if self.validate_can_move_to_position(new_position):
+                break
+            print("RIGHT", new_position.x, new_position.y, self.angle)
+
+            self.angle = current_angle
+            default_turn_angle += angle_increase_value
 
         self.current_position = new_position
         self.moves.append(new_position)
+        print(self.current_position.x, self.current_position.y, self.angle)
 
     def calculate_new_position(self):
         new_x = self.current_position.x + self.velocity * cos(radians(self.angle))
         new_y = self.current_position.y + self.velocity * sin(radians(self.angle))
-        return Point2d(new_x, new_y)
+        return Point2d(round(new_x, 3), round(new_y, 3))
 
     def stabilize_angle(self):
         dx = self.objective.position.x - self.current_position.x
         dy = self.objective.position.y - self.current_position.y
 
         initial_angle = degrees(atan2(dy, dx))
-        return 360 - (initial_angle + 360) % 360
+        return (initial_angle + 360) % 360
 
-    def turn(self, direction):
+    def turn(self, direction, angle_value: int):
+        angle = self.angle
         if direction == "left":
-            self.angle -= self.velocity * self.maneuverability
+            angle += angle_value
         elif direction == "right":
-            self.angle += self.velocity * self.maneuverability
+            # angle -= self.velocity * self.maneuverability
+            angle -= angle_value
 
-        self.angle %= 360
+        return angle % 360
 
     def get_moves(self):
         return self.moves
@@ -69,7 +92,7 @@ class UAV:
 
     def validate_can_move_to_position(self, desired_position: Point2d):
         for obstacle in self.obstacles:
-            if obstacle.is_point_inside(desired_position)\
-                    or obstacle.does_move_intercourse_obstacle(self.current_position, desired_position):
+            if obstacle.is_point_inside(desired_position):
+                    # or obstacle.does_move_intercourse_obstacle(self.current_position, desired_position):
                 return False
         return True

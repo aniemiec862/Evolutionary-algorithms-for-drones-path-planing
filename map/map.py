@@ -37,7 +37,6 @@ class Map:
 
         plt.xlim(0, self.width)
         plt.ylim(0, self.height)
-        plt.gca().invert_yaxis()
 
         plt.grid(True)
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)

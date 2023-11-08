@@ -24,6 +24,7 @@ class MapObject:
         return self.position.count_distance(point) <= self.radius
 
     def does_move_intercourse_obstacle(self, p1, p2):
+        if p2.x == p1.x: return True
         # y = mx + b
         m = (p2.y - p1.y) / (p2.x - p1.x)
         b = p1.y - m*p1.x
