@@ -1,4 +1,4 @@
-from math import sin, cos, radians, degrees, atan2, pi
+from math import sin, cos, radians, degrees, atan2
 from entities.MapObject import MapObject
 from entities.Point2d import Point2d
 
@@ -16,7 +16,7 @@ class UAV:
         self.maneuverability = maneuverability
         self.objective = objective
         self.obstacles = obstacles
-        self.angle = self.stabilize_angle()
+        self.angle = 0
 
     def move_to_position(self, position: Point2d):
         self.moves.append(position)
@@ -63,9 +63,9 @@ class UAV:
     def turn(self, direction, angle_value: int):
         angle = self.angle
         if direction == "left":
+            # when maneuverability is added: angle +/- = self.velocity * self.maneuverability
             angle += angle_value
         elif direction == "right":
-            # angle -= self.velocity * self.maneuverability
             angle -= angle_value
 
         return angle % 360
@@ -87,7 +87,7 @@ class UAV:
 
     def validate_can_move_to_position(self, desired_position: Point2d):
         for obstacle in self.obstacles:
-            if obstacle.is_point_inside(desired_position):
-                    # or obstacle.does_move_intercourse_obstacle(self.current_position, desired_position):
+            if obstacle.is_point_inside(desired_position) \
+                    or obstacle.does_move_intercourse_obstacle(self.current_position, desired_position):
                 return False
         return True
