@@ -2,12 +2,16 @@ from entities.MapObject import MapObjectType, MapObject
 from uav.uav import UAV
 import matplotlib.pyplot as plt
 
+
 class Map:
-    def __init__(self, width: int, height: int, init_points: list[MapObject]):
+    def __init__(self, width: int, height: int, start: MapObject, objective: MapObject, obstacles: list[MapObject]):
         self.width = width
         self.height = height
 
-        self.points = init_points
+        self.start = start
+        self.objective = objective
+        self.obstacles = obstacles
+        self.points = obstacles + [start, objective]
 
     def visualize(self, uavs: list[UAV]):
         color_mapping = {

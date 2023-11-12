@@ -1,6 +1,7 @@
 from enum import Enum
 from entities.Point2d import Point2d
 
+
 class MapObjectType(Enum):
     START = 0
     OBJECTIVE = 1

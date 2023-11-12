@@ -1,81 +1,45 @@
-from math import sin, cos, radians, degrees, atan2
 from entities.MapObject import MapObject
 from entities.Point2d import Point2d
+from uav.genotype import Genotype, MoveGene
 
-class Genotype:
-    def __init__(self, velocity, maneuverability):
-        self.velocity = velocity
-        self.maneuverability = maneuverability
 
 class UAV:
-    def __init__(self, position: Point2d, velocity: float, max_velocity: float, maneuverability: float, objective: MapObject, obstacles: [MapObject]):
-        self.current_position = position
-        self.moves = [position]
-        self.velocity = velocity
-        self.max_velocity = max_velocity
-        self.maneuverability = maneuverability
+    def __init__(self, genotype: Genotype, start: MapObject, objective: MapObject, obstacles: list[MapObject]):
+        self.genotype = genotype
+        self.start = start
         self.objective = objective
         self.obstacles = obstacles
-        self.angle = 0
+        self.position = self.start.position
+        self.moves = [self.start.position]
+        self.is_destroyed = False
+        self.has_reach_objective = False
+        self.move_counter = 0
 
     def move_to_position(self, position: Point2d):
         self.moves.append(position)
-        self.current_position = position
+        self.position = position
 
     def move(self):
-        angle_increase_value = 5
-        default_turn_angle = 5
-        self.angle = self.stabilize_angle()
+        move_gene = self.genotype.move_genes[self.move_counter]
+        self.move_counter += 1
 
-        new_position = self.calculate_new_position()
+        new_position = self.calculate_new_position(move_gene)
 
-        while not self.validate_can_move_to_position(new_position):
-            current_angle = self.angle
-            self.angle = self.turn("left", default_turn_angle)
-            new_position = self.calculate_new_position()
-            if self.validate_can_move_to_position(new_position):
-                break
+        if self.objective.is_point_inside(new_position):
+            self.has_reach_objective = True
 
-            self.angle = current_angle
-            self.angle = self.turn("right", default_turn_angle)
-            new_position = self.calculate_new_position()
-            if self.validate_can_move_to_position(new_position):
-                break
+        if not self.validate_can_move_to_position(new_position):
+            self.is_destroyed = True
 
-            self.angle = current_angle
-            default_turn_angle += angle_increase_value
-
-        self.current_position = new_position
+        self.position = new_position
         self.moves.append(new_position)
 
-    def calculate_new_position(self):
-        new_x = self.current_position.x + self.velocity * cos(radians(self.angle))
-        new_y = self.current_position.y + self.velocity * sin(radians(self.angle))
-        return Point2d(round(new_x, 3), round(new_y, 3))
-
-    def stabilize_angle(self):
-        dx = self.objective.position.x - self.current_position.x
-        dy = self.objective.position.y - self.current_position.y
-
-        initial_angle = degrees(atan2(dy, dx))
-        return (initial_angle + 360) % 360
-
-    def turn(self, direction, angle_value: int):
-        angle = self.angle
-        if direction == "left":
-            # when maneuverability is added: angle +/- = self.velocity * self.maneuverability
-            angle += angle_value
-        elif direction == "right":
-            angle -= angle_value
-
-        return angle % 360
+    def calculate_new_position(self, move_gene: MoveGene):
+        move_vector = move_gene.to_vector()
+        return Point2d(self.position.x + move_vector.x, self.position.y + move_vector.y)
 
     def get_moves(self):
         return self.moves
-
-    def set_velocity(self, v: float):
-        if v <= self.max_velocity:
-            self.velocity = v
 
     def calculate_traveled_distance(self):
         distance = 0.0
@@ -85,9 +49,14 @@ class UAV:
             distance += pos1.count_distance(pos2)
         return round(distance, 3)
 
-    def validate_can_move_to_position(self, desired_position: Point2d):
+    def validate_can_move_to_position(self, position: Point2d):
         for obstacle in self.obstacles:
-            if obstacle.is_point_inside(desired_position) \
-                    or obstacle.does_move_intercourse_obstacle(self.current_position, desired_position):
+            if obstacle.is_point_inside(position) \
+                    or obstacle.does_move_intercourse_obstacle(self.position, position):
                 return False
         return True
+
+    def reset(self):
+        self.move_counter = 0
+        self.position = self.start.position
+        self.moves = [self.start.position]
