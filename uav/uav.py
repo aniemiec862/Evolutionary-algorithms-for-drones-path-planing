@@ -1,14 +1,15 @@
-from entities.MapObject import MapObject
-from entities.Point2d import Point2d
+from utils.Point2d import Point2d
+from map.map import Map
 from uav.genotype import Genotype, MoveGene
 
 
 class UAV:
-    def __init__(self, genotype: Genotype, start: MapObject, objective: MapObject, obstacles: list[MapObject]):
+    def __init__(self, genotype: Genotype, map: Map):
         self.genotype = genotype
-        self.start = start
-        self.objective = objective
-        self.obstacles = obstacles
+        self.map = map
+        self.start = map.start
+        self.objective = map.objective
+        self.obstacles = map.obstacles
         self.position = self.start.position
         self.moves = [self.start.position]
         self.is_destroyed = False
@@ -30,9 +31,9 @@ class UAV:
 
         if not self.validate_can_move_to_position(new_position):
             self.is_destroyed = True
-
-        self.position = new_position
-        self.moves.append(new_position)
+        else:
+            self.position = new_position
+            self.moves.append(new_position)
 
     def calculate_new_position(self, move_gene: MoveGene):
         move_vector = move_gene.to_vector()
@@ -50,6 +51,9 @@ class UAV:
         return round(distance, 3)
 
     def validate_can_move_to_position(self, position: Point2d):
+        if position.x < 0 or position.x > self.map.width or position.y < 0 or position.y > self.map.height:
+            return False
+
         for obstacle in self.obstacles:
             if obstacle.is_point_inside(position) \
                     or obstacle.does_move_intercourse_obstacle(self.position, position):
@@ -57,6 +61,8 @@ class UAV:
         return True
 
     def reset(self):
-        self.move_counter = 0
         self.position = self.start.position
         self.moves = [self.start.position]
+        self.is_destroyed = False
+        self.has_reach_objective = False
+        self.move_counter = 0

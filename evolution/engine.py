@@ -14,7 +14,7 @@ class Engine:
         uavs = []
         for _ in range(no_uavs):
             genotype = Genotype.generate_random(moves_length)
-            uavs.append(UAV(genotype, map.start, map.objective, map.obstacles))
+            uavs.append(UAV(genotype, map))
         return uavs
 
     def run(self):

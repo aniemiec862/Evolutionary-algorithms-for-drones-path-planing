@@ -1,6 +1,6 @@
 from math import sin, cos, radians, degrees, atan2
-from entities.MapObject import MapObject
-from entities.Point2d import Point2d
+from map.MapObject import MapObject
+from utils.Point2d import Point2d
 
 class UAV:
     def __init__(self, position: Point2d, velocity: float, max_velocity: float, maneuverability: float, objective: MapObject, obstacles: [MapObject]):

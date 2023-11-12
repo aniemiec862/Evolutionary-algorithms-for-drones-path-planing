@@ -1,6 +1,7 @@
-from entities.MapObject import MapObjectType, MapObject
-from entities.Point2d import Point2d
-from evolution.Engine import Engine
+from evolution.engine import Engine
+from map.map_object import MapObjectType, MapObject, MapUAV
+from utils.Point2d import Point2d
+
 from map.map import Map
 
 if __name__ == "__main__":
@@ -13,12 +14,12 @@ if __name__ == "__main__":
 
     map = Map(20, 20, start, objective, obstacles)
 
-    no_uavs = 5
-    no_iterations = 3
-    engine = Engine(no_uavs, no_iterations, map, 5)
+    no_uavs = 1
+    no_iterations = 1
+    max_moves_length = 50
+    engine = Engine(no_uavs, no_iterations, map, 50)
 
     engine.run()
 
-    points = obstacles + [start, objective]
-
-    map.visualize(engine.uavs)
+    list_of_map_uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in engine.uavs]
+    map.visualize(list_of_map_uavs)

@@ -1,5 +1,5 @@
 from enum import Enum
-from entities.Point2d import Point2d
+from utils.Point2d import Point2d
 
 
 class MoveGene(Enum):

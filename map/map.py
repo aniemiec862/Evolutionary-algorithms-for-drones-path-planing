@@ -1,6 +1,6 @@
-from entities.MapObject import MapObjectType, MapObject
-from uav.uav import UAV
 import matplotlib.pyplot as plt
+
+from map.map_object import MapObject, MapObjectType, MapUAV
 
 
 class Map:
@@ -13,7 +13,7 @@ class Map:
         self.obstacles = obstacles
         self.points = obstacles + [start, objective]
 
-    def visualize(self, uavs: list[UAV]):
+    def visualize(self, uavs: list[MapUAV]):
         color_mapping = {
             MapObjectType.START: "green",
             MapObjectType.OBJECTIVE: "blue",
@@ -31,13 +31,12 @@ class Map:
             ax.add_artist(circle)
 
         for uav in uavs:
-            moves = uav.get_moves()
+            moves = uav.moves
             if moves:
                 x, y = zip(*[(move.x, move.y) for move in moves])
                 plt.plot(x, y, marker='o', linestyle='-', markersize=5, linewidth=3.0,
                          label='UAV Path', color=color_mapping[MapObjectType.UAV])
-                distance = uav.calculate_traveled_distance()
-                plt.text(x[-1], y[-1], f"Traveled: {int(distance)}m", fontsize=10, color='black', ha='left', va='bottom')
+                plt.text(x[-1], y[-1], f"Traveled: {int(uav.distance)}m", fontsize=10, color='black', ha='left', va='bottom')
 
         plt.xlim(0, self.width)
         plt.ylim(0, self.height)

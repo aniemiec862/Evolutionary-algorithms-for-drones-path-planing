@@ -1,5 +1,5 @@
 from enum import Enum
-from entities.Point2d import Point2d
+from utils.Point2d import Point2d
 
 
 class MapObjectType(Enum):
@@ -27,3 +27,10 @@ class MapObject:
     def does_move_intercourse_obstacle(self, p1, p2):
         segment_to_object_center_distance = Point2d.distance_segment_to_point(p1, p2, self.position)
         return segment_to_object_center_distance <= self.radius
+
+
+class MapUAV:
+    def __init__(self, moves: [Point2d], distance: int):
+        self.moves = moves
+        self.distance = distance
+        self.type = MapObjectType.UAV
