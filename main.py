@@ -14,10 +14,10 @@ if __name__ == "__main__":
 
     map = Map(20, 20, start, objective, obstacles)
 
-    no_uavs = 1
-    no_iterations = 1
+    no_uavs = 3
+    no_generations = 1
     max_moves_length = 50
-    engine = Engine(no_uavs, no_iterations, map, 50)
+    engine = Engine(no_uavs, no_generations, map, 50)
 
     engine.run()
 

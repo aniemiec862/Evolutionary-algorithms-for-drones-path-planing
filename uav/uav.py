@@ -42,14 +42,6 @@ class UAV:
     def get_moves(self):
         return self.moves
 
-    def calculate_traveled_distance(self):
-        distance = 0.0
-        for move_id in range(len(self.moves) - 1):
-            pos1 = self.moves[move_id]
-            pos2 = self.moves[move_id + 1]
-            distance += pos1.count_distance(pos2)
-        return round(distance, 3)
-
     def validate_can_move_to_position(self, position: Point2d):
         if position.x < 0 or position.x > self.map.width or position.y < 0 or position.y > self.map.height:
             return False
@@ -60,9 +52,13 @@ class UAV:
                 return False
         return True
 
-    def reset(self):
-        self.position = self.start.position
-        self.moves = [self.start.position]
-        self.is_destroyed = False
-        self.has_reach_objective = False
-        self.move_counter = 0
+    def calculate_traveled_distance(self):
+        distance = 0.0
+        for move_id in range(len(self.moves) - 1):
+            pos1 = self.moves[move_id]
+            pos2 = self.moves[move_id + 1]
+            distance += pos1.count_distance(pos2)
+        return round(distance, 3)
+
+    def calculate_distance_from_objective(self):
+        return self.position.count_distance(self.objective.position) - self.objective.radius

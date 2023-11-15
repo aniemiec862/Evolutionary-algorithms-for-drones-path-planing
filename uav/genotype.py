@@ -1,4 +1,5 @@
 from enum import Enum
+import random
 from utils.Point2d import Point2d
 
 
@@ -37,6 +38,5 @@ class Genotype:
 
     @classmethod
     def generate_random(cls, num_moves):
-        import random
         move_genes = [MoveGene(random.randint(0, 7)) for _ in range(num_moves)]
         return cls(move_genes)
