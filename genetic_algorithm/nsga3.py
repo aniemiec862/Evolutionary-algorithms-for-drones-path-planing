@@ -14,11 +14,8 @@ class NSGA3:
                 objective_values[objective_id] = self.objective_function(uav, selected_objectives[objective_id])
             objectives.append(objective_values)
 
-        print(objectives)
-
         # Non-dominated sorting
         fronts = self.non_dominated_sort(objectives)
-        print(fronts)
         # Crowding distance calculation
         crowding_distances = []
         for f in fronts:
@@ -59,7 +56,7 @@ class NSGA3:
         population_size = len(objectives)
         dominance_matrix = [[0] * population_size for _ in range(population_size)]
         ranks = [0] * population_size
-        fronts = []
+        fronts = [[]]
 
         # Step 1: Dominance Matrix Calculation
         for i in range(population_size):
@@ -77,7 +74,8 @@ class NSGA3:
                 if dominance_matrix[i][j] == 1:
                     ranks[i] += 1
             if ranks[i] == 0:
-                fronts.append([i])
+                fronts[0].append(i)
+
         # Step 3: Fronts Construction
         index = 0
         while len(fronts[index]) > 0:
@@ -85,7 +83,7 @@ class NSGA3:
 
             for i in fronts[index]:
                 for j in range(population_size):
-                    if dominance_matrix[i][j] == 1:
+                    if dominance_matrix[j][i] == 1:
                         ranks[j] -= 1
 
                         if ranks[j] == 0:
@@ -94,6 +92,8 @@ class NSGA3:
             index += 1
             fronts.append(next_front)
 
+        fronts.pop()
+        fronts.reverse()
         # The fronts list contains a list of fronts, where each front is represented by a list of indices corresponding
         # to solutions in that front. The fronts are ordered based on dominance relationships, with the first front
         # containing non-dominated solutions, and so on.
@@ -105,8 +105,9 @@ class NSGA3:
         population_size = len(front)
         distances = [0] * population_size
         for objective_index in range(len(objectives[0])):
+            #sort by current objective value
             front = sorted(front, key=lambda x: objectives[x][objective_index])
-            distances[objective_index] = math.inf
+            distances[0] = math.inf
             distances[population_size - 1] = math.inf
 
             objective_min = objectives[front[0]][objective_index]
