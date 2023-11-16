@@ -20,14 +20,17 @@ class Engine:
         return uavs
 
     def run(self):
-        for _ in range(self.no_generations):
-            self.run_generation()
+        for gen_id in range(self.no_generations):
+            self.run_generation(gen_id)
 
-    def run_generation(self):
+    def run_generation(self, gen_id):
         for _ in range(self.max_moves_length):
             self.move_uavs()
 
-        NSGA3().run_generation(
+        if gen_id + 1 == self.no_generations:
+            return
+
+        self.uavs = NSGA3().run_generation(
             self.uavs,
             [OptimizationObjective.TRAVELED_DISTANCE, OptimizationObjective.DISTANCE_FROM_OBJECTIVE],
             0.9,

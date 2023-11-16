@@ -2,7 +2,15 @@ import math
 import random
 
 from genetic_algorithm.genetic_algorithm import OptimizationObjective
+from uav.genotype import Genotype, MoveGene
 from uav.uav import UAV
+
+
+class CrowdingDistanceResult:
+    def __init__(self, id: int, front_rank: int, crowding_distance_value: float):
+        self.id = id
+        self.front_rank = front_rank
+        self.crowding_distance_value = crowding_distance_value
 
 
 class NSGA3:
@@ -18,8 +26,8 @@ class NSGA3:
         fronts = self.non_dominated_sort(objectives)
         # Crowding distance calculation
         crowding_distances = []
-        for f in fronts:
-            crowding_distances += self.crowding_distance_assignment(f, objectives)
+        for f in range(len(fronts)):
+            crowding_distances += self.crowding_distance_assignment(fronts[f], objectives, f)
 
         new_population = []
         while len(new_population) < len(uavs):
@@ -28,12 +36,16 @@ class NSGA3:
             parent2 = self.tournament_selection(uavs, crowding_distances)
 
             # Crossover
-            child = self.crossover(parent1, parent2, crossover_rate)
+            offspring_genes = self.crossover(parent1, parent2, crossover_rate)
 
             # Mutation
-            child = self.mutate(child, mutation_rate)
+            mutated_genes = self.mutate(offspring_genes, mutation_rate)
 
-            new_population.append(child)
+            new_population.append(UAV(
+                Genotype(mutated_genes),
+                uavs[0].map
+            ))
+        return new_population
 
     @staticmethod
     def objective_function(uav: UAV, objective: OptimizationObjective):
@@ -101,11 +113,11 @@ class NSGA3:
 
     # Crowding distance assignment
     @staticmethod
-    def crowding_distance_assignment(front, objectives):
+    def crowding_distance_assignment(front, objectives, front_rank):
         population_size = len(front)
         distances = [0] * population_size
         for objective_index in range(len(objectives[0])):
-            #sort by current objective value
+            # sort by current objective value
             front = sorted(front, key=lambda x: objectives[x][objective_index])
             distances[0] = math.inf
             distances[population_size - 1] = math.inf
@@ -117,11 +129,11 @@ class NSGA3:
                 continue
 
             for i in range(1, population_size - 1):
-                distances[i] += (objectives[front[i + 1]][objective_index] - objectives[front[i - 1]][
-                    objective_index]) / (
-                                        objective_max - objective_min)
+                distances[i] += (objectives[front[i + 1]][objective_index] - objectives[front[i - 1]][objective_index]) \
+                                / (objective_max - objective_min)
 
-        return distances
+        # Associate distances with UAV and objective IDs
+        return [CrowdingDistanceResult(front[i], distances[i], front_rank) for i in range(population_size)]
 
     @staticmethod
     def dominates(objective_values1, objective_values2):
@@ -130,49 +142,41 @@ class NSGA3:
         return all(o1 <= o2 for o1, o2 in zip(objective_values1, objective_values2))
 
     @staticmethod
-    def tournament_selection(population, crowding_distances, tournament_size = 2):
-        # # Randomly select individuals for the tournament
-        # tournament_indices = random.sample(range(len(population)), tournament_size)
-        #
-        # # Create a list of tuples containing (index, crowding_distance)
-        # candidates = [(index, crowding_distances[index]) for index in tournament_indices]
-        #
-        # # Select the individual with the highest crowding distance
-        # winner_index = max(candidates, key=lambda x: x[1])[0]
-        #
-        # # Return the selected individual
-        # return population[winner_index]
-        pass
+    def tournament_selection(uavs, crowding_distances, tournament_size=2):
+        # tournament selection
+        tournament_indices = random.sample(range(len(uavs)), tournament_size)
+
+        # Select the UAV with the smaller front rank, and if equal, select the one with the smaller crowding distance
+        winner_index = min(tournament_indices, key=lambda idx: (crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
+
+        return uavs[winner_index]
 
     @staticmethod
-    def crossover(parent1, parent2, crossover_rate):
-        # # Randomly determine whether to perform crossover
-        # if random.random() > crossover_rate:
-        #     # No crossover, return one of the parents
-        #     return random.choice([parent1, parent2])
-        #
-        # # Randomly select a crossover point
-        # crossover_point = random.randint(1, len(parent1))
-        #
-        # # Create a child by combining parts of both parents
-        # child = parent1[:crossover_point] + parent2[crossover_point:]
-        #
-        # return child
-        pass
+    def crossover(parent1: UAV, parent2: UAV, crossover_rate: float):
+        genes1 = parent1.genotype.move_genes
+        genes2 = parent2.genotype.move_genes
+
+        assert len(genes1) == len(genes2), "Parent genes must have the same length"
+
+        if random.random() <= crossover_rate:
+            # random crossover point
+            crossover_point = random.randint(0, len(genes1) - 1)
+
+            # combining genes from both parents
+            offspring_genes = genes1[:crossover_point] + genes2[crossover_point:]
+            return offspring_genes
+        else:
+            return genes1 if random.random() < 0.5 else genes2
 
     @staticmethod
-    def mutate(individual, mutation_rate):
-        # # Randomly determine whether to perform mutation
-        # if random.random() > mutation_rate:
-        #     # No mutation, return the original individual
-        #     return individual
-        #
-        # # Randomly select a gene to mutate
-        # mutated_gene_index = random.randint(0, len(individual) - 1)
-        #
-        # # Perform mutation (you may need a specific mutation operation based on your problem)
-        # # For example, you could randomly change the value of the selected gene
-        # individual[mutated_gene_index] = random_value_generation()
-        #
-        # return individual
-        pass
+    def mutate(genes: [MoveGene], mutation_rate):
+        mutated_genes = genes
+
+        if random.random() <= mutation_rate:
+            num_genes = len(genes)
+            num_genes_to_mutate = int(mutation_rate * num_genes) + 1  # Ensure at least one gene is mutated
+            selected_gene_indices = random.sample(range(num_genes), num_genes_to_mutate)
+            for i in selected_gene_indices:
+                mutated_genes[i] = MoveGene(random.randint(0, 7))
+
+        return mutated_genes
