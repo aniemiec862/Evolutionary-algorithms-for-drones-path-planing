@@ -15,8 +15,8 @@ if __name__ == "__main__":
     map = Map(20, 20, start, objective, obstacles)
 
     no_uavs = 200
-    no_generations = 1000
-    max_moves_length = 50
+    no_generations = 200
+    max_moves_length = 200
     visualize_all_steps = False
     engine = Engine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 

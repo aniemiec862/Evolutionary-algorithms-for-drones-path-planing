@@ -164,11 +164,13 @@ class NSGA3:
         assert len(genes1) == len(genes2), "Parent genes must have the same length"
 
         if random.random() <= crossover_rate:
-            # random crossover point
-            crossover_point = random.randint(0, len(genes1) - 1)
+            # Ordered Crossover
+            crossover_point1 = random.randint(0, len(genes1) - 1)
+            crossover_point2 = random.randint(crossover_point1 + 1, len(genes1))
 
-            # combining genes from both parents
-            offspring_genes = genes1[:crossover_point] + genes2[crossover_point:]
+            preserved_segment = genes1[crossover_point1:crossover_point2]
+
+            offspring_genes = genes2[:crossover_point1] + preserved_segment + genes2[crossover_point2:]
             return offspring_genes
         else:
             return genes1 if random.random() < 0.5 else genes2

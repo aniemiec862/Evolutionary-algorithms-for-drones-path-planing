@@ -31,9 +31,9 @@ class UAV:
 
         if not self.validate_can_move_to_position(new_position):
             self.is_destroyed = True
-        else:
-            self.position = new_position
-            self.moves.append(new_position)
+
+        self.position = new_position
+        self.moves.append(new_position)
 
     def calculate_new_position(self, move_gene: MoveGene):
         move_vector = move_gene.to_vector()
@@ -43,7 +43,7 @@ class UAV:
         return self.moves
 
     def validate_can_move_to_position(self, position: Point2d):
-        if position.x < 0 or position.x > self.map.width or position.y < 0 or position.y > self.map.height:
+        if position.x <= 0 or position.x >= self.map.width or position.y <= 0 or position.y >= self.map.height:
             return False
 
         for obstacle in self.obstacles:
