@@ -24,6 +24,7 @@ class NSGA3:
 
         # Non-dominated sorting
         fronts = self.non_dominated_sort(objectives)
+
         # Crowding distance calculation
         crowding_distances = []
         for f in range(len(fronts)):
@@ -32,8 +33,13 @@ class NSGA3:
         new_population = []
         while len(new_population) < len(uavs):
             # Tournament selection
-            parent1 = self.tournament_selection(uavs, crowding_distances)
-            parent2 = self.tournament_selection(uavs, crowding_distances)
+            parent1_id = self.tournament_selection(uavs, crowding_distances)
+            parent2_id = parent1_id
+            while parent2_id == parent1_id:
+                parent2_id = self.tournament_selection(uavs, crowding_distances)
+
+            parent1 = uavs[parent1_id]
+            parent2 = uavs[parent2_id]
 
             # Crossover
             offspring_genes = self.crossover(parent1, parent2, crossover_rate)
@@ -133,7 +139,7 @@ class NSGA3:
                                 / (objective_max - objective_min)
 
         # Associate distances with UAV and objective IDs
-        return [CrowdingDistanceResult(front[i], distances[i], front_rank) for i in range(population_size)]
+        return [CrowdingDistanceResult(front[i], front_rank, distances[i]) for i in range(population_size)]
 
     @staticmethod
     def dominates(objective_values1, objective_values2):
@@ -148,8 +154,7 @@ class NSGA3:
 
         # Select the UAV with the smaller front rank, and if equal, select the one with the smaller crowding distance
         winner_index = min(tournament_indices, key=lambda idx: (crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
-
-        return uavs[winner_index]
+        return winner_index
 
     @staticmethod
     def crossover(parent1: UAV, parent2: UAV, crossover_rate: float):

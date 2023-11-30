@@ -14,12 +14,10 @@ if __name__ == "__main__":
 
     map = Map(20, 20, start, objective, obstacles)
 
-    no_uavs = 30
-    no_generations = 100
+    no_uavs = 200
+    no_generations = 1000
     max_moves_length = 50
-    engine = Engine(no_uavs, no_generations, map, 50)
+    visualize_all_steps = False
+    engine = Engine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
     engine.run()
-
-    list_of_map_uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in engine.uavs]
-    map.visualize(list_of_map_uavs)

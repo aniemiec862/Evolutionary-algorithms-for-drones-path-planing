@@ -13,7 +13,7 @@ class Map:
         self.obstacles = obstacles
         self.points = obstacles + [start, objective]
 
-    def visualize(self, uavs: list[MapUAV]):
+    def visualize(self, generation_id: int, uavs: list[MapUAV]):
         color_mapping = {
             MapObjectType.START: "green",
             MapObjectType.OBJECTIVE: "blue",
@@ -43,5 +43,6 @@ class Map:
 
         plt.grid(True)
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)
+        plt.title(f'Generation {generation_id}')
 
         plt.show()
