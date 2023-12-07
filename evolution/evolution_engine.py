@@ -7,7 +7,7 @@ from uav.uav import UAV
 from utils.Point2d import Point2d
 
 
-class Engine:
+class EvolutionEngine:
     def __init__(self, no_uavs: int, no_generations: int, map: Map, max_moves_length: int, visualize_all_steps: bool):
         self.uavs = self.init_uavs(no_uavs, map, max_moves_length)
         self.no_generations = no_generations
