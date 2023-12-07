@@ -33,6 +33,11 @@ class NSGA3:
         for f in range(len(fronts)):
             crowding_distances += self.crowding_distance_assignment(fronts[f], objectives, f)
 
+        # for f in range(len(fronts)):
+        #     print(f)
+        #     for front in fronts[f]:
+        #         print(objectives[front])
+
         new_population = []
         while len(new_population) < len(uavs):
             # Tournament selection
@@ -61,13 +66,13 @@ class NSGA3:
         # Example: Assume a bi-objective optimization problem
         # where we aim to minimize two objectives: f1 and f2
 
-        # Objective 1: Minimize f1
-        if objective == OptimizationObjective.DISTANCE_FROM_OBJECTIVE:
-            f1 = uav.calculate_distance_from_objective()
+        # # Objective 1: Minimize f1
+        if objective == OptimizationObjective.ILLEGAL_MOVES:
+            f1 = uav.illegal_moves_counter
             return f1
 
         # Objective 2: Minimize f2
-        elif objective == OptimizationObjective.TRAVELED_DISTANCE:
+        if objective == OptimizationObjective.TRAVELED_DISTANCE:
             f2 = uav.calculate_traveled_distance()
             return f2
 

@@ -3,7 +3,7 @@ from enum import Enum
 
 class OptimizationObjective(Enum):
     TRAVELED_DISTANCE = 0
-    DISTANCE_FROM_OBJECTIVE = 1
+    ILLEGAL_MOVES = 1
 
 # class GeneticAlgorithm(ABC):
 #

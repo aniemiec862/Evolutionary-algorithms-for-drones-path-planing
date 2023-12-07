@@ -19,7 +19,8 @@ class Engine:
     def init_uavs(no_uavs: int, map: Map, moves_length: int):
         uavs = []
         for _ in range(no_uavs):
-            genotype = Genotype.generate_random(moves_length, map.width, map.height)
+            # genotype = Genotype.generate_random(moves_length, map.width, map.height)
+            genotype = Genotype.generate_random_with_sorted_by_distance(moves_length, map.start.position, map.objective.position)
             uavs.append(UAV(genotype, map))
         return uavs
 
@@ -43,7 +44,7 @@ class Engine:
 
         self.uavs = NSGA3().run_generation(
             self.uavs,
-            [OptimizationObjective.DISTANCE_FROM_OBJECTIVE],
+            [OptimizationObjective.TRAVELED_DISTANCE, OptimizationObjective.ILLEGAL_MOVES],
             0.9,
             0.1 / len(self.uavs),
             Point2d(self.map.width, self.map.height)
@@ -51,8 +52,7 @@ class Engine:
 
     def move_uavs(self):
         for uav in self.uavs:
-            if not uav.is_destroyed and not uav.has_reach_objective:
-                uav.move()
+            uav.move()
 
     def visualize_uavs(self, generation_id: int):
         list_of_map_uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in self.uavs]

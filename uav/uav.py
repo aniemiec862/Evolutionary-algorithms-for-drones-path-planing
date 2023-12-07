@@ -15,16 +15,14 @@ class UAV:
         self.is_destroyed = False
         self.has_reach_objective = False
         self.move_counter = 1
+        self.illegal_moves_counter = 0
 
     def move(self):
         new_position = self.moves[self.move_counter]
         self.move_counter += 1
 
-        if self.objective.is_point_inside(new_position):
-            self.has_reach_objective = True
-
         if not self.validate_can_move_to_position(new_position):
-            self.is_destroyed = True
+            self.illegal_moves_counter += 1
 
         self.position = new_position
 
@@ -34,6 +32,9 @@ class UAV:
     def validate_can_move_to_position(self, position: Point2d):
         if position.x <= 0 or position.x >= self.map.width or position.y <= 0 or position.y >= self.map.height:
             return False
+
+        if position.x == self.position.x and position.y == self.position.y:
+            return True
 
         for obstacle in self.obstacles:
             if obstacle.is_point_inside(position) \
