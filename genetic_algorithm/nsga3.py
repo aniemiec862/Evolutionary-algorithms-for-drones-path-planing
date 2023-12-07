@@ -2,8 +2,9 @@ import math
 import random
 
 from genetic_algorithm.genetic_algorithm import OptimizationObjective
-from uav.genotype import Genotype, MoveGene
+from uav.genotype import Genotype
 from uav.uav import UAV
+from utils.Point2d import Point2d
 
 
 class CrowdingDistanceResult:
@@ -14,7 +15,7 @@ class CrowdingDistanceResult:
 
 
 class NSGA3:
-    def run_generation(self, uavs: [UAV], selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float):
+    def run_generation(self, uavs: [UAV], selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, max_position: Point2d):
         objectives = []
         for uav in uavs:
             objective_values = [0] * len(selected_objectives)
@@ -24,6 +25,8 @@ class NSGA3:
 
         # Non-dominated sorting
         fronts = self.non_dominated_sort(objectives)
+
+        reference_points = self.generate_reference_points(len(selected_objectives), len(uavs))
 
         # Crowding distance calculation
         crowding_distances = []
@@ -45,7 +48,7 @@ class NSGA3:
             offspring_genes = self.crossover(parent1, parent2, crossover_rate)
 
             # Mutation
-            mutated_genes = self.mutate(offspring_genes, mutation_rate)
+            mutated_genes = self.mutate(offspring_genes, mutation_rate, max_position)
 
             new_population.append(UAV(
                 Genotype(mutated_genes),
@@ -117,6 +120,10 @@ class NSGA3:
         # containing non-dominated solutions, and so on.
         return fronts
 
+    @staticmethod
+    def generate_reference_points(num_objectives, num_reference_points):
+        return [[random.uniform(0, 1) for _ in range(num_objectives)] for _ in range(num_reference_points)]
+
     # Crowding distance assignment
     @staticmethod
     def crowding_distance_assignment(front, objectives, front_rank):
@@ -158,8 +165,8 @@ class NSGA3:
 
     @staticmethod
     def crossover(parent1: UAV, parent2: UAV, crossover_rate: float):
-        genes1 = parent1.genotype.move_genes
-        genes2 = parent2.genotype.move_genes
+        genes1 = parent1.genotype.position_genes
+        genes2 = parent2.genotype.position_genes
 
         assert len(genes1) == len(genes2), "Parent genes must have the same length"
 
@@ -176,7 +183,7 @@ class NSGA3:
             return genes1 if random.random() < 0.5 else genes2
 
     @staticmethod
-    def mutate(genes: [MoveGene], mutation_rate):
+    def mutate(genes: [Point2d], mutation_rate, max_position: Point2d):
         mutated_genes = genes
 
         if random.random() <= mutation_rate:
@@ -184,6 +191,6 @@ class NSGA3:
             num_genes_to_mutate = int(mutation_rate * num_genes) + 1  # Ensure at least one gene is mutated
             selected_gene_indices = random.sample(range(num_genes), num_genes_to_mutate)
             for i in selected_gene_indices:
-                mutated_genes[i] = MoveGene(random.randint(0, 7))
+                mutated_genes[i] = Point2d.generate_single_position(int(max_position.x), int(max_position.y))
 
         return mutated_genes

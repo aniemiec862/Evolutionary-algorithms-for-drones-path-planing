@@ -1,4 +1,6 @@
+import random
 from math import sqrt
+
 
 class Point2d:
     def __init__(self, x: float, y: float):
@@ -51,3 +53,7 @@ class Point2d:
             return sqrt(Point2d.hypot2(external_point, segment_p2))
         else:
             return sqrt(Point2d.hypot2(external_point, D))
+
+    @staticmethod
+    def generate_single_position(max_x: int, max_y: int):
+        return Point2d(random.randint(0, max_x), random.randint(0, max_y))

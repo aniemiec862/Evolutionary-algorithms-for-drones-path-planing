@@ -1,6 +1,6 @@
 from utils.Point2d import Point2d
 from map.map import Map
-from uav.genotype import Genotype, MoveGene
+from uav.genotype import Genotype
 
 
 class UAV:
@@ -11,20 +11,14 @@ class UAV:
         self.objective = map.objective
         self.obstacles = map.obstacles
         self.position = self.start.position
-        self.moves = [self.start.position]
+        self.moves = [self.start.position] + genotype.position_genes + [self.objective.position]
         self.is_destroyed = False
         self.has_reach_objective = False
-        self.move_counter = 0
-
-    def move_to_position(self, position: Point2d):
-        self.moves.append(position)
-        self.position = position
+        self.move_counter = 1
 
     def move(self):
-        move_gene = self.genotype.move_genes[self.move_counter]
+        new_position = self.moves[self.move_counter]
         self.move_counter += 1
-
-        new_position = self.calculate_new_position(move_gene)
 
         if self.objective.is_point_inside(new_position):
             self.has_reach_objective = True
@@ -33,11 +27,6 @@ class UAV:
             self.is_destroyed = True
 
         self.position = new_position
-        self.moves.append(new_position)
-
-    def calculate_new_position(self, move_gene: MoveGene):
-        move_vector = move_gene.to_vector()
-        return Point2d(self.position.x + move_vector.x, self.position.y + move_vector.y)
 
     def get_moves(self):
         return self.moves

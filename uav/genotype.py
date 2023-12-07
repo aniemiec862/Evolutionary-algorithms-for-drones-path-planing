@@ -1,42 +1,12 @@
-from enum import Enum
 import random
 from utils.Point2d import Point2d
 
 
-class MoveGene(Enum):
-    N = 0
-    NE = 1
-    E = 2
-    SE = 3
-    S = 4
-    SW = 5
-    W = 6
-    NW = 7
-
-    def to_vector(self):
-        if self.value == 0:
-            return Point2d(0, 1)
-        elif self.value == 1:
-            return Point2d(1, 1)
-        elif self.value == 2:
-            return Point2d(1, 0)
-        elif self.value == 3:
-            return Point2d(1, -1)
-        elif self.value == 4:
-            return Point2d(0, -1)
-        elif self.value == 5:
-            return Point2d(-1, -1)
-        elif self.value == 6:
-            return Point2d(-1, 0)
-        elif self.value == 7:
-            return Point2d(-1, 1)
-
-
 class Genotype:
-    def __init__(self, move_genes: [MoveGene]):
-        self.move_genes = move_genes
+    def __init__(self, position_genes: [Point2d]):
+        self.position_genes = position_genes
 
     @classmethod
-    def generate_random(cls, num_moves):
-        move_genes = [MoveGene(random.randint(0, 7)) for _ in range(num_moves)]
-        return cls(move_genes)
+    def generate_random(cls, num_moves: int, max_x: int, max_y: int):
+        position_genes = [Point2d(random.randint(0, max_x), random.randint(0, max_y)) for _ in range(num_moves)]
+        return cls(position_genes)

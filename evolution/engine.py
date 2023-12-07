@@ -4,6 +4,7 @@ from map.map import Map
 from map.map_object import MapUAV
 from uav.genotype import Genotype
 from uav.uav import UAV
+from utils.Point2d import Point2d
 
 
 class Engine:
@@ -18,7 +19,7 @@ class Engine:
     def init_uavs(no_uavs: int, map: Map, moves_length: int):
         uavs = []
         for _ in range(no_uavs):
-            genotype = Genotype.generate_random(moves_length)
+            genotype = Genotype.generate_random(moves_length, map.width, map.height)
             uavs.append(UAV(genotype, map))
         return uavs
 
@@ -45,6 +46,7 @@ class Engine:
             [OptimizationObjective.DISTANCE_FROM_OBJECTIVE],
             0.9,
             0.1 / len(self.uavs),
+            Point2d(self.map.width, self.map.height)
         )
 
     def move_uavs(self):
@@ -58,4 +60,4 @@ class Engine:
 
     def print_uavs(self):
         for uav in self.uavs:
-            print(uav.genotype.move_genes)
+            print(uav.genotype.position_genes)
