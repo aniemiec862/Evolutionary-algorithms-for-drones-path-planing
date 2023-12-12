@@ -51,14 +51,12 @@ class NSGA3:
 
             # Crossover
             offspring_genes = self.crossover(parent1, parent2, crossover_rate)
+            uav = UAV(Genotype(offspring_genes), uavs[0].map)
 
             # Mutation
-            mutated_genes = self.mutate(offspring_genes, mutation_rate, max_position)
+            self.mutate(uav, mutation_rate)
 
-            new_population.append(UAV(
-                Genotype(mutated_genes),
-                uavs[0].map
-            ))
+            new_population.append(uav)
         return new_population
 
     @staticmethod
@@ -170,32 +168,17 @@ class NSGA3:
 
     @staticmethod
     def crossover(parent1: UAV, parent2: UAV, crossover_rate: float):
-        genes1 = parent1.genotype.position_genes
-        genes2 = parent2.genotype.position_genes
+        genes1 = parent1.genotype
+        genes2 = parent2.genotype
 
-        assert len(genes1) == len(genes2), "Parent genes must have the same length"
+        assert len(genes1.position_genes) == len(genes2.position_genes), "Parent genes must have the same length"
 
         if random.random() <= crossover_rate:
-            # Ordered Crossover
-            crossover_point1 = random.randint(0, len(genes1) - 1)
-            crossover_point2 = random.randint(crossover_point1 + 1, len(genes1))
-
-            preserved_segment = genes1[crossover_point1:crossover_point2]
-
-            offspring_genes = genes2[:crossover_point1] + preserved_segment + genes2[crossover_point2:]
-            return offspring_genes
+            return genes1.crossover(genes2)
         else:
-            return genes1 if random.random() < 0.5 else genes2
+            return genes1.position_genes if random.random() < 0.5 else genes2.position_genes
 
     @staticmethod
-    def mutate(genes: [Point2d], mutation_rate, max_position: Point2d):
-        mutated_genes = genes
-
+    def mutate(uav: UAV, mutation_rate):
         if random.random() <= mutation_rate:
-            num_genes = len(genes)
-            num_genes_to_mutate = int(mutation_rate * num_genes) + 1  # Ensure at least one gene is mutated
-            selected_gene_indices = random.sample(range(num_genes), num_genes_to_mutate)
-            for i in selected_gene_indices:
-                mutated_genes[i] = Point2d.generate_single_position(int(max_position.x), int(max_position.y))
-
-        return mutated_genes
+            uav.genotype.mutate(uav.map.width, uav.map.height)

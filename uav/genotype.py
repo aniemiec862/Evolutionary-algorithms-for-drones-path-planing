@@ -26,3 +26,25 @@ class Genotype:
         position_genes = [Point2d(start.x + i * step_x, start.y + i * step_y) for i in range(1, num_moves)]
 
         return cls(position_genes)
+
+    def mutate(self, max_x, max_y):
+        mutate_num = random.randint(0, len(self.position_genes) - 1)
+        mutate_index = [random.randint(0, len(self.position_genes) - 1) for _ in range(mutate_num)]
+        for index in mutate_index:
+            self.position_genes[index] = Point2d(random.randint(0, max_x), random.randint(0, max_y))
+
+    def crossover(self, other):
+        crossover_point1 = random.randint(0, len(self.position_genes) - 1)
+        crossover_point2 = random.randint(crossover_point1 + 1, len(self.position_genes))
+
+        preserved_segment = self.position_genes[crossover_point1:crossover_point2]
+        preserved_segment_other = other.position_genes[crossover_point1:crossover_point2]
+
+        averaged_segment = [Point2d((i.x + j.x) / 2, (i.y + j.y) / 2) for i, j in zip(preserved_segment, preserved_segment_other)]
+
+        offspring_genes = (
+            other.position_genes[:crossover_point1]
+            + averaged_segment
+            + other.position_genes[crossover_point2:]
+        )
+        return offspring_genes

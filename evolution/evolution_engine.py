@@ -32,6 +32,8 @@ class EvolutionEngine:
         if self.visualize_all_steps is False:
             self.visualize_uavs(self.no_generations)
 
+        # self.print_uavs()
+
     def run_generation(self, gen_id):
         for _ in range(self.max_moves_length):
             self.move_uavs()
@@ -45,7 +47,7 @@ class EvolutionEngine:
         self.uavs = NSGA3().run_generation(
             self.uavs,
             [OptimizationObjective.TRAVELED_DISTANCE, OptimizationObjective.ILLEGAL_MOVES],
-            0.9,
+            1,
             0.1 / len(self.uavs),
             Point2d(self.map.width, self.map.height)
         )
@@ -60,4 +62,5 @@ class EvolutionEngine:
 
     def print_uavs(self):
         for uav in self.uavs:
-            print(uav.genotype.position_genes)
+            coordinates = [(point.x, point.y) for point in uav.genotype.position_genes]
+            print(coordinates)
