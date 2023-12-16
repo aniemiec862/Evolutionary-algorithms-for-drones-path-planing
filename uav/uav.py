@@ -1,7 +1,7 @@
 from utils.Point2d import Point2d
 from map.map import Map
 from uav.genotype import Genotype
-
+import math
 
 class UAV:
     def __init__(self, genotype: Genotype, map: Map):
@@ -15,14 +15,14 @@ class UAV:
         self.is_destroyed = False
         self.has_reach_objective = False
         self.move_counter = 1
-        self.illegal_moves_counter = 0
+        self.intersection_moves = 0
 
     def move(self):
         new_position = self.moves[self.move_counter]
         self.move_counter += 1
 
         if not self.validate_can_move_to_position(new_position):
-            self.illegal_moves_counter += 1
+            self.intersection_moves += 1
 
         self.position = new_position
 
@@ -52,3 +52,24 @@ class UAV:
 
     def calculate_distance_from_objective(self):
         return self.position.count_distance(self.objective.position) - self.objective.radius
+
+    def get_cost(self):
+        return (self.intersection_moves * 50 +
+                self.calculate_obstacle_proximity() * 20 +
+                self.calculate_traveled_distance() * 3 +
+                self.calculate_path_smoothness() * 12)
+
+    def calculate_path_smoothness(self):
+        angles = []
+        for move_id in range(len(self.moves) - 2):
+            pos1 = self.moves[move_id]
+            pos2 = self.moves[move_id + 1]
+            pos3 = self.moves[move_id + 2]
+            angle = Point2d.calculate_angle(pos1, pos2, pos3)
+            angles.append(angle)
+        return max(angles) if angles else 0
+
+
+    def calculate_obstacle_proximity(self):
+        min_distance = min(obstacle.distance_to_point(self.position) for obstacle in self.obstacles)
+        return math.exp(-0.2 * min_distance)

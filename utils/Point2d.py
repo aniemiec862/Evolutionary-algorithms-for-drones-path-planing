@@ -1,6 +1,6 @@
 import random
 from math import sqrt
-
+import numpy as np
 
 class Point2d:
     def __init__(self, x: float, y: float):
@@ -57,3 +57,18 @@ class Point2d:
     @staticmethod
     def generate_single_position(max_x: int, max_y: int):
         return Point2d(random.randint(0, max_x), random.randint(0, max_y))
+
+    @staticmethod
+    def calculate_angle(pos1, pos2, pos3):
+        # Calculate the angle between three positions
+        vector1 = np.array([pos1.x - pos2.x, pos1.y - pos2.y])
+        vector2 = np.array([pos3.x - pos2.x, pos3.y - pos2.y])
+
+        dot_product = np.dot(vector1, vector2)
+        norm_product = np.linalg.norm(vector1) * np.linalg.norm(vector2)
+
+        if norm_product == 0:
+            return 0.0
+
+        cos_angle = dot_product / norm_product
+        return np.arccos(np.clip(cos_angle, -1.0, 1.0))

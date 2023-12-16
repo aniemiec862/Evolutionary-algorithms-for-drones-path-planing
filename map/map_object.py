@@ -28,6 +28,9 @@ class MapObject:
         segment_to_object_center_distance = Point2d.distance_segment_to_point(p1, p2, self.position)
         return segment_to_object_center_distance <= self.radius
 
+    def distance_to_point(self, point: Point2d):
+        distance = point.count_distance(self.position) - self.radius
+        return max(0, distance) if not self.is_point_inside(point) else float('inf')
 
 class MapUAV:
     def __init__(self, moves: [Point2d], distance: int):

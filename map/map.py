@@ -27,7 +27,7 @@ class Map:
         for point in self.points:
             color = color_mapping[point.get_type()]
             x, y = point.position.x, point.position.y
-            circle = plt.Circle((x, y), point.radius, color=color, fill=True, alpha=0.5)
+            circle = plt.Circle((x, y), point.radius, color=color, fill=True, alpha=0.8)
             ax.add_artist(circle)
 
         for uav in uavs:
