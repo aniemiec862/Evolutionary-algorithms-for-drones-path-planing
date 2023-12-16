@@ -1,7 +1,9 @@
 import math
 import random
+from abc import ABC
 
 from evolution.objective import OptimizationObjective
+from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
 from uav.genotype import Genotype
 from uav.uav import UAV
 from utils.Point2d import Point2d
@@ -14,19 +16,22 @@ class CrowdingDistanceResult:
         self.crowding_distance_value = crowding_distance_value
 
 
-class NSGA3:
-    def run_generation(self, uavs: [UAV], selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, max_position: Point2d):
+class NSGA3(GeneticAlgorithm, ABC):
+    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, max_position: Point2d):
+        super().__init__(selected_objectives, crossover_rate, mutation_rate, max_position)
+
+    def run_generation(self, uavs: [UAV]):
         objectives = []
         for uav in uavs:
-            objective_values = [0] * len(selected_objectives)
-            for objective_id in range(len(selected_objectives)):
-                objective_values[objective_id] = self.objective_function(uav, selected_objectives[objective_id])
+            objective_values = [0] * len(self.selected_objectives)
+            for objective_id in range(len(self.selected_objectives)):
+                objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
             objectives.append(objective_values)
 
         # Non-dominated sorting
         fronts = self.non_dominated_sort(objectives)
 
-        reference_points = self.generate_reference_points(len(selected_objectives), len(uavs))
+        # reference_points = self.generate_reference_points(len(self.selected_objectives), len(uavs))
 
         # Crowding distance calculation
         crowding_distances = []
@@ -50,11 +55,11 @@ class NSGA3:
             parent2 = uavs[parent2_id]
 
             # Crossover
-            offspring_genes = self.crossover(parent1, parent2, crossover_rate)
+            offspring_genes = self.crossover(parent1, parent2, self.crossover_rate)
             uav = UAV(Genotype(offspring_genes), uavs[0].map)
 
             # Mutation
-            self.mutate(uav, mutation_rate)
+            self.mutate(uav, self.mutation_rate)
 
             new_population.append(uav)
         return new_population

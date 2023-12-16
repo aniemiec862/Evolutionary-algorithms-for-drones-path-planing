@@ -1,10 +1,9 @@
 from evolution.objective import OptimizationObjective
-from genetic_algorithm.nsga3 import NSGA3
+from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
 from map.map import Map
 from map.map_object import MapUAV
 from uav.genotype import Genotype
 from uav.uav import UAV
-from utils.Point2d import Point2d
 
 
 class EvolutionEngine:
@@ -25,17 +24,17 @@ class EvolutionEngine:
             uavs.append(UAV(genotype, map))
         return uavs
 
-    def run(self):
+    def run(self, algorithm: GeneticAlgorithm):
         for gen_id in range(self.no_generations):
             print("Gen: ", gen_id + 1)
-            self.run_generation(gen_id)
+            self.run_generation(gen_id, algorithm)
 
         if self.visualize_all_steps is False:
             self.visualize_uavs(self.no_generations)
 
         # self.print_uavs()
 
-    def run_generation(self, gen_id):
+    def run_generation(self, gen_id, algorithm: GeneticAlgorithm):
         for _ in range(self.max_moves_length):
             self.move_uavs()
 
@@ -45,13 +44,7 @@ class EvolutionEngine:
         if gen_id + 1 == self.no_generations:
             return
 
-        self.uavs = NSGA3().run_generation(
-            self.uavs,
-            self.objectives,
-            1,
-            0.1 / len(self.uavs),
-            Point2d(self.map.width, self.map.height)
-        )
+        self.uavs = algorithm.run_generation(self.uavs)
 
     def move_uavs(self):
         for uav in self.uavs:
