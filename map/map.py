@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import pygame
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from map.map_object import MapObject, MapObjectType, MapUAV
 
@@ -13,7 +15,7 @@ class Map:
         self.obstacles = obstacles
         self.points = obstacles + [start, objective]
 
-    def visualize(self, generation_id: int, uavs: list[MapUAV]):
+    def build_plot(self, generation_id, uavs):
         color_mapping = {
             MapObjectType.START: "green",
             MapObjectType.OBJECTIVE: "blue",
@@ -34,15 +36,31 @@ class Map:
             moves = uav.moves
             if moves:
                 x, y = zip(*[(move.x, move.y) for move in moves])
-                plt.plot(x, y, marker='o', linestyle='-', markersize=5, linewidth=3.0,
-                         label='UAV Path', color=color_mapping[MapObjectType.UAV])
-                plt.text(x[-1], y[-1], f"Traveled: {int(uav.distance)}m", fontsize=10, color='black', ha='left', va='bottom')
+                ax.plot(x, y, marker='o', linestyle='-', markersize=5, linewidth=3.0,
+                        label='UAV Path', color=color_mapping[MapObjectType.UAV])
+                ax.text(x[-1], y[-1], f"Traveled: {int(uav.distance)}m", fontsize=10, color='black', ha='left',
+                        va='bottom')
 
-        plt.xlim(0, self.width)
-        plt.ylim(0, self.height)
+        ax.set_xlim(0, self.width)
+        ax.set_ylim(0, self.height)
 
-        plt.grid(True)
+        ax.grid(True)
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)
-        plt.title(f'Generation {generation_id}')
+        ax.set_title(f'Generation {generation_id}')
 
+        return plt
+
+    def visualize(self, generation_id: int, uavs: list[MapUAV]):
+        plt = self.build_plot(generation_id, uavs)
         plt.show()
+
+    def save_to_image(self, generation_id: int, uavs: list[MapUAV]):
+        plt = self.build_plot(generation_id, uavs)
+        canvas = FigureCanvasAgg(plt.figure())
+        canvas.draw()
+        renderer = canvas.get_renderer()
+        raw_data = renderer.tostring_rgb()
+
+        size = canvas.get_width_height()
+        plt.close()
+        return pygame.image.fromstring(raw_data, size, "RGB")

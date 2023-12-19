@@ -1,4 +1,3 @@
-from evolution.objective import OptimizationObjective
 from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
 from map.map import Map
 from map.map_object import MapUAV
@@ -7,13 +6,12 @@ from uav.uav import UAV
 
 
 class EvolutionEngine:
-    def __init__(self, no_uavs: int, no_generations: int, map: Map, max_moves_length: int, visualize_all_steps: bool, objectives: [OptimizationObjective]):
+    def __init__(self, no_uavs: int, no_generations: int, map: Map, max_moves_length: int, visualize_all_steps: bool):
         self.uavs = self.init_uavs(no_uavs, map, max_moves_length)
         self.no_generations = no_generations
         self.map = map
         self.max_moves_length = max_moves_length
         self.visualize_all_steps = visualize_all_steps
-        self.objectives = objectives
 
     @staticmethod
     def init_uavs(no_uavs: int, map: Map, moves_length: int):
@@ -51,9 +49,11 @@ class EvolutionEngine:
             uav.move()
 
     def visualize_uavs(self, generation_id: int):
+        self.map.visualize(generation_id, self.get_map_uavs())
+
+    def get_map_uavs(self):
         sorted_uav_list = sorted(self.uavs, key=lambda uav: uav.get_cost())
-        list_of_map_uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in sorted_uav_list[:10]]
-        self.map.visualize(generation_id, list_of_map_uavs)
+        return [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in sorted_uav_list[:10]]
 
     def print_uavs(self):
         for uav in self.uavs:
