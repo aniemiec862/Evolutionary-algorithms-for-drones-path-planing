@@ -30,8 +30,6 @@ class EvolutionEngine:
         if self.visualize_all_steps is False:
             self.visualize_uavs(self.no_generations)
 
-        # self.print_uavs()
-
     def run_generation(self, gen_id, algorithm: GeneticAlgorithm):
         for _ in range(self.max_moves_length):
             self.move_uavs()

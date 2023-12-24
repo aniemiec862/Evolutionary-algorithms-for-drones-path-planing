@@ -11,21 +11,24 @@ if __name__ == "__main__":
     objective = MapObject(Point2d(18, 18), 2, MapObjectType.OBJECTIVE)
 
     obstacles = [
-        MapObject(Point2d(14, 10), 3, MapObjectType.OBSTACLE),
+        MapObject(Point2d(16, 12), 4, MapObjectType.OBSTACLE),
+        MapObject(Point2d(7, 9), 2, MapObjectType.OBSTACLE),
+        MapObject(Point2d(10, 18), 3, MapObjectType.OBSTACLE),
+        MapObject(Point2d(12, 6), 3, MapObjectType.OBSTACLE),
     ]
 
     map = Map(20, 20, start, objective, obstacles)
 
-    no_uavs = 100
-    no_generations = 10
-    max_moves_length = 15
-    visualize_all_steps = False
+    no_uavs = 1000
+    no_generations = 100
+    max_moves_length = 5
+    visualize_all_steps = True
     objectives = [OptimizationObjective.PATH_SCORE]
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
     nsga3 = NSGA3(objectives, 1, 0.1 / no_uavs,  Point2d(map.width, map.height))
 
-    # evolution.run(nsga3)
+    evolution.run(nsga3)
 
-    gui = GUIEngine(map)
-    gui.run()
+    # gui = GUIEngine(map)
+    # gui.run()

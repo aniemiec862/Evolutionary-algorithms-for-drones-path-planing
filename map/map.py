@@ -44,7 +44,6 @@ class Map:
         ax.set_xlim(0, self.width)
         ax.set_ylim(0, self.height)
 
-        ax.grid(True)
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)
         ax.set_title(f'Generation {generation_id}')
 
