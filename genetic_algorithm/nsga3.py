@@ -158,7 +158,6 @@ class NSGA3(GeneticAlgorithm, ABC):
 
     @staticmethod
     def dominates(objective_values1, objective_values2):
-        # Check if objective_values1 dominates objective_values2
         # Returns True if objective_values1 dominates objective_values2, False otherwise
         return all(o1 <= o2 for o1, o2 in zip(objective_values1, objective_values2))
 
@@ -167,7 +166,7 @@ class NSGA3(GeneticAlgorithm, ABC):
         # tournament selection
         tournament_indices = random.sample(range(len(uavs)), tournament_size)
 
-        # Select the UAV with the smaller front rank, and if equal, select the one with the smaller crowding distance
+        # Select the UAV with smaller front rank, and if equal, select the one with the smaller crowding distance
         winner_index = min(tournament_indices, key=lambda idx: (crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
         return winner_index
 

@@ -55,8 +55,8 @@ class UAV:
 
     def get_cost(self):
         return (self.intersection_moves * 50 +
-                self.calculate_obstacle_proximity() * 20 +
-                self.calculate_traveled_distance() * 3 +
+                self.calculate_obstacle_proximity() * 2 +
+                self.calculate_traveled_distance() * 30 +
                 self.calculate_path_smoothness() * 12)
 
     def calculate_path_smoothness(self):
