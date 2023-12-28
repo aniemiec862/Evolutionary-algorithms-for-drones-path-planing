@@ -56,10 +56,12 @@ class NSGA3(GeneticAlgorithm, ABC):
 
             # Crossover
             offspring_genes = self.crossover(parent1, parent2, self.crossover_rate)
-            uav = UAV(Genotype(offspring_genes), uavs[0].map)
+            uav = UAV(Genotype(offspring_genes, parent1.genotype.start_position), uavs[0].map)
 
             # Mutation
             self.mutate(uav, self.mutation_rate)
+
+            uav.genotype.sort_by_distance()
 
             new_population.append(uav)
         return new_population

@@ -3,19 +3,20 @@ from utils.Point2d import Point2d
 
 
 class Genotype:
-    def __init__(self, position_genes: [Point2d]):
+    def __init__(self, position_genes: [Point2d], start_position: Point2d):
         self.position_genes = position_genes
+        self.start_position = start_position
 
     @classmethod
     def generate_random(cls, num_moves: int, max_x: int, max_y: int):
         position_genes = [Point2d(random.randint(0, max_x), random.randint(0, max_y)) for _ in range(num_moves)]
-        return cls(position_genes)
+        return cls(position_genes, Point2d(0, 0))
 
     @classmethod
     def generate_random_with_sorted_by_distance(cls, num_moves: int, start: Point2d, finish: Point2d):
         position_genes = [Point2d(random.randint(int(start.x), int(finish.x)), random.randint(int(start.y), int(finish.y))) for _ in range(num_moves)]
         position_genes.sort(key=lambda point: start.count_distance(point))
-        return cls(position_genes)
+        return cls(position_genes, start)
 
     @classmethod
     def generate_straight(cls, num_moves: int, start: Point2d, finish: Point2d):
@@ -25,7 +26,7 @@ class Genotype:
         # Generate position genes for the straight line (excluding start and finish points)
         position_genes = [Point2d(start.x + i * step_x, start.y + i * step_y) for i in range(1, num_moves)]
 
-        return cls(position_genes)
+        return cls(position_genes, start)
 
     def mutate(self, max_x, max_y):
         mutate_num = random.randint(0, len(self.position_genes) - 1)
@@ -48,3 +49,6 @@ class Genotype:
             + other.position_genes[crossover_point2:]
         )
         return offspring_genes
+
+    def sort_by_distance(self):
+        self.position_genes.sort(key=lambda point: self.start_position.count_distance(point))

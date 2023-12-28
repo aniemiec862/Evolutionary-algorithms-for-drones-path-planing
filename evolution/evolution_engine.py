@@ -31,8 +31,8 @@ class EvolutionEngine:
             self.visualize_uavs(self.no_generations)
 
     def run_generation(self, gen_id, algorithm: GeneticAlgorithm):
-        for _ in range(self.max_moves_length):
-            self.move_uavs()
+        for uav in self.uavs:
+            uav.move()
 
         if self.visualize_all_steps is True:
             self.visualize_uavs(gen_id + 1)
@@ -41,10 +41,6 @@ class EvolutionEngine:
             return
 
         self.uavs = algorithm.run_generation(self.uavs)
-
-    def move_uavs(self):
-        for uav in self.uavs:
-            uav.move()
 
     def visualize_uavs(self, generation_id: int):
         self.map.visualize(generation_id, self.get_map_uavs())

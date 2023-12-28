@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     map = Map(20, 20, start, objective, obstacles)
 
-    no_uavs = 50
+    no_uavs = 500
     no_generations = 100
     max_moves_length = 5
     visualize_all_steps = True
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
     # nsga3 = NSGA3(objectives, 1, 0.1 / no_uavs,  Point2d(map.width, map.height))
-    spea2 = SPEA2(objectives, 1, 0.2, Point2d(map.width, map.height), evolution.uavs, 10)
+    spea2 = SPEA2(objectives, 1, 0.1 / no_uavs, Point2d(map.width, map.height), evolution.uavs, 10)
 
     evolution.run(spea2)
 

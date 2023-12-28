@@ -3,6 +3,7 @@ from map.map import Map
 from uav.genotype import Genotype
 import math
 
+
 class UAV:
     def __init__(self, genotype: Genotype, map: Map):
         self.genotype = genotype
@@ -12,19 +13,17 @@ class UAV:
         self.obstacles = map.obstacles
         self.position = self.start.position
         self.moves = [self.start.position] + genotype.position_genes + [self.objective.position]
-        self.is_destroyed = False
-        self.has_reach_objective = False
-        self.move_counter = 1
         self.intersection_moves = 0
+        self.cost = 0
 
     def move(self):
-        new_position = self.moves[self.move_counter]
-        self.move_counter += 1
+        for move_id in range(1, len(self.moves)):
+            new_position = self.moves[move_id]
+            if not self.validate_can_move_to_position(new_position):
+                self.intersection_moves += 1
+            self.position = new_position
 
-        if not self.validate_can_move_to_position(new_position):
-            self.intersection_moves += 1
-
-        self.position = new_position
+        self.calculate_cost()
 
     def get_moves(self):
         return self.moves
@@ -53,11 +52,16 @@ class UAV:
     def calculate_distance_from_objective(self):
         return self.position.count_distance(self.objective.position) - self.objective.radius
 
+    def calculate_cost(self):
+        self.cost = (self.intersection_moves * 50 +
+                     self.calculate_obstacle_proximity() * 2 +
+                     self.calculate_traveled_distance() * 30 +
+                     self.calculate_path_smoothness() * 12)
+
     def get_cost(self):
-        return (self.intersection_moves * 50 +
-                self.calculate_obstacle_proximity() * 2 +
-                self.calculate_traveled_distance() * 30 +
-                self.calculate_path_smoothness() * 12)
+        if self.cost == 0:
+            self.calculate_cost()
+        return self.cost
 
     def calculate_path_smoothness(self):
         angles = []
@@ -68,7 +72,6 @@ class UAV:
             angle = Point2d.calculate_angle(pos1, pos2, pos3)
             angles.append(angle)
         return max(angles) if angles else 0
-
 
     def calculate_obstacle_proximity(self):
         min_distance = min(obstacle.distance_to_point(self.position) for obstacle in self.obstacles)
