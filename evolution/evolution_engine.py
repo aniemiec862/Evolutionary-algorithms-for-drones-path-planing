@@ -47,7 +47,7 @@ class EvolutionEngine:
 
     def get_map_uavs(self):
         sorted_uav_list = sorted(self.uavs, key=lambda uav: uav.get_cost())
-        return [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in sorted_uav_list[:10]]
+        return [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in sorted_uav_list[:1]]
 
     def print_uavs(self):
         for uav in self.uavs:

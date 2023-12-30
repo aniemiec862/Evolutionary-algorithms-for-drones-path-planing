@@ -32,8 +32,8 @@ class SPEA2(GeneticAlgorithm, ABC):
             while parent2_id == parent1_id:
                 parent2_id = self.tournament_selection()
 
-            parent1 = uavs[parent1_id]
-            parent2 = uavs[parent2_id]
+            parent1 = self.archive[parent1_id].uav
+            parent2 = self.archive[parent2_id].uav
 
             # Crossover
             offspring_genes = self.crossover(parent1, parent2, self.crossover_rate)

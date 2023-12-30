@@ -51,4 +51,4 @@ class Genotype:
         return offspring_genes
 
     def sort_by_distance(self):
-        self.position_genes.sort(key=lambda point: self.start_position.count_distance(point))
+        self.position_genes = sorted(self.position_genes, key=lambda point: self.start_position.count_distance(point))

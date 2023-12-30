@@ -8,29 +8,30 @@ from map.map_object import MapObject, MapObjectType
 from utils.Point2d import Point2d
 
 if __name__ == "__main__":
-    start = MapObject(Point2d(5, 5), 1, MapObjectType.START)
-    objective = MapObject(Point2d(18, 18), 2, MapObjectType.OBJECTIVE)
+    start = MapObject(Point2d(50, 50), 10, MapObjectType.START)
+    objective = MapObject(Point2d(180, 180), 20, MapObjectType.OBJECTIVE)
 
     obstacles = [
-        MapObject(Point2d(16, 12), 4, MapObjectType.OBSTACLE),
-        MapObject(Point2d(7, 9), 2, MapObjectType.OBSTACLE),
-        MapObject(Point2d(10, 18), 3, MapObjectType.OBSTACLE),
-        MapObject(Point2d(12, 6), 3, MapObjectType.OBSTACLE),
+        MapObject(Point2d(160, 120), 40, MapObjectType.OBSTACLE),
+        MapObject(Point2d(70, 90), 20, MapObjectType.OBSTACLE),
+        MapObject(Point2d(100, 180), 30, MapObjectType.OBSTACLE),
+        MapObject(Point2d(120, 60), 30, MapObjectType.OBSTACLE),
     ]
 
-    map = Map(20, 20, start, objective, obstacles)
+    map = Map(200, 200, start, objective, obstacles)
 
-    no_uavs = 500
-    no_generations = 100
-    max_moves_length = 5
+    no_uavs = 100
+    no_generations = 50
+    max_moves_length = 10
     visualize_all_steps = True
     objectives = [OptimizationObjective.PATH_SCORE]
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
-    # nsga3 = NSGA3(objectives, 1, 0.1 / no_uavs,  Point2d(map.width, map.height))
-    spea2 = SPEA2(objectives, 1, 0.1 / no_uavs, Point2d(map.width, map.height), evolution.uavs, 10)
+    nsga3 = NSGA3(objectives, 1, 1 / no_uavs,  Point2d(map.width, map.height))
+    spea2 = SPEA2(objectives, 1, 1 / no_uavs, Point2d(map.width, map.height), evolution.uavs, 25)
 
-    evolution.run(spea2)
+    evolution.run(nsga3)
+    # evolution.run(spea2)
 
     # gui = GUIEngine(map)
     # gui.run()
