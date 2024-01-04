@@ -1,4 +1,6 @@
 import random
+
+from map.map import Map
 from utils.Point2d import Point2d
 
 
@@ -28,11 +30,20 @@ class Genotype:
 
         return cls(position_genes, start)
 
-    def mutate(self, max_x, max_y):
+    def mutate(self, map: Map):
+        # consider mutating smaller number of genes
         mutate_num = random.randint(0, len(self.position_genes) - 1)
         mutate_index = [random.randint(0, len(self.position_genes) - 1) for _ in range(mutate_num)]
         for index in mutate_index:
-            self.position_genes[index] = Point2d(random.randint(0, max_x), random.randint(0, max_y))
+            new_position = None
+            while new_position is None:
+                new_position = Point2d(random.randint(0, map.width), random.randint(0, map.height))
+                print(new_position.x, new_position.y)
+                for obstacle in map.obstacles:
+                    if obstacle.is_point_inside(new_position):
+                        new_position = None
+                        break
+            self.position_genes[index] = new_position
 
     def crossover(self, other):
         crossover_point1 = random.randint(0, len(self.position_genes) - 1)
@@ -48,6 +59,12 @@ class Genotype:
             + averaged_segment
             + other.position_genes[crossover_point2:]
         )
+
+        # offspring_genes = (
+        #     other.position_genes[:crossover_point1]
+        #     + self.position_genes[crossover_point1:crossover_point2]
+        #     + other.position_genes[crossover_point2:]
+        # )
         return offspring_genes
 
     def sort_by_distance(self):

@@ -4,9 +4,9 @@ from abc import ABC
 
 from evolution.objective import OptimizationObjective
 from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
+from map.map import Map
 from uav.genotype import Genotype
 from uav.uav import UAV
-from utils.Point2d import Point2d
 
 class UAVFitness:
     def __init__(self, uav: UAV, fitness: float):
@@ -16,8 +16,8 @@ class UAVFitness:
 
 class SPEA2(GeneticAlgorithm, ABC):
     def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float,
-                 max_position: Point2d, init_uavs: [UAV], archive_size: int):
-        super().__init__(selected_objectives, crossover_rate, mutation_rate, max_position)
+                 map: Map, init_uavs: [UAV], archive_size: int):
+        super().__init__(selected_objectives, crossover_rate, mutation_rate, map)
         self.archive_size = archive_size
         fitness_uavs = self.calculate_fitness(init_uavs)
         self.archive = fitness_uavs
@@ -153,4 +153,4 @@ class SPEA2(GeneticAlgorithm, ABC):
     @staticmethod
     def mutate(uav: UAV, mutation_rate):
         if random.random() <= mutation_rate:
-            uav.genotype.mutate(uav.map.width, uav.map.height)
+            uav.genotype.mutate(uav.map)

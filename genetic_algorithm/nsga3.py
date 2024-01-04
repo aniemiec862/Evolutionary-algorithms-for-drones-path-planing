@@ -4,9 +4,9 @@ from abc import ABC
 
 from evolution.objective import OptimizationObjective
 from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
+from map.map import Map
 from uav.genotype import Genotype
 from uav.uav import UAV
-from utils.Point2d import Point2d
 
 
 class CrowdingDistanceResult:
@@ -17,8 +17,8 @@ class CrowdingDistanceResult:
 
 
 class NSGA3(GeneticAlgorithm, ABC):
-    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, max_position: Point2d):
-        super().__init__(selected_objectives, crossover_rate, mutation_rate, max_position)
+    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, map: Map):
+        super().__init__(selected_objectives, crossover_rate, mutation_rate, map)
 
     def run_generation(self, uavs: [UAV]):
         objectives = []
@@ -37,11 +37,6 @@ class NSGA3(GeneticAlgorithm, ABC):
         crowding_distances = []
         for f in range(len(fronts)):
             crowding_distances += self.crowding_distance_assignment(fronts[f], objectives, f)
-
-        # for f in range(len(fronts)):
-        #     print(f)
-        #     for front in fronts[f]:
-        #         print(objectives[front])
 
         new_population = []
         while len(new_population) < len(uavs):
@@ -187,4 +182,4 @@ class NSGA3(GeneticAlgorithm, ABC):
     @staticmethod
     def mutate(uav: UAV, mutation_rate):
         if random.random() <= mutation_rate:
-            uav.genotype.mutate(uav.map.width, uav.map.height)
+            uav.genotype.mutate(uav.map)
