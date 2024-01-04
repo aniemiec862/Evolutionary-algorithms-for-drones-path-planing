@@ -8,6 +8,7 @@ from map.map import Map
 from uav.genotype import Genotype
 from uav.uav import UAV
 
+
 class UAVFitness:
     def __init__(self, uav: UAV, fitness: float):
         self.uav = uav
@@ -21,7 +22,6 @@ class SPEA2(GeneticAlgorithm, ABC):
         self.archive_size = archive_size
         fitness_uavs = self.calculate_fitness(init_uavs)
         self.archive = fitness_uavs
-
 
     def run_generation(self, uavs: [UAV]):
         new_population = []
@@ -64,6 +64,7 @@ class SPEA2(GeneticAlgorithm, ABC):
         #     return f2
 
         # Add more objectives as needed for multi-objective optimization
+
     def calculate_fitness(self, uavs: [UAV]):
         raw_fitness = self.calculate_raw_fitness(uavs)
         k_neighbour = math.floor(math.sqrt(len(uavs) + self.archive_size))
@@ -87,10 +88,6 @@ class SPEA2(GeneticAlgorithm, ABC):
             for j in range(len(uavs)):
                 if i != j and self.dominates(uavs[i], uavs[j]):
                     strength[i] += 1
-
-        for i in range(len(uavs)):
-            for j in range(len(uavs)):
-                if i != j and self.dominates(uavs[i], uavs[j]):
                     raw_fitness[j] += strength[i]
 
         return raw_fitness
@@ -104,14 +101,13 @@ class SPEA2(GeneticAlgorithm, ABC):
 
     def calculate_density(self, uavs: [UAV], k_neighbour: int):
         distance = [[0] * len(uavs) for _ in range(len(uavs))]
+        density = [0 for _ in range(len(uavs))]
 
         for i in range(len(uavs)):
             for j in range(len(uavs)):
-                distance[i][j] = self.euclidean_distance(uavs[i], uavs[j])
-
-        density = [0 for _ in range(len(uavs))]
-        for i in range(len(uavs)):
-            ordered_distances = sorted(distance[i])
+                if i != j:
+                    distance[i][j] = self.euclidean_distance(uavs[i], uavs[j])
+            ordered_distances = sorted(distance[i])[1:]
             density[i] = 1 / (ordered_distances[k_neighbour] + 2)
 
         return density
