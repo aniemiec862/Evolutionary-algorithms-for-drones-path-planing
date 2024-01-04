@@ -28,7 +28,7 @@ if __name__ == "__main__":
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
     nsga3 = NSGA3(objectives, 1, 0.1, Point2d(map.width, map.height))
-    spea2 = SPEA2(objectives, 1, 0.1, Point2d(map.width, map.height), evolution.uavs, 25)
+    # spea2 = SPEA2(objectives, 1, 0.1, Point2d(map.width, map.height), evolution.uavs, int(0.3*no_uavs))
 
     evolution.run(nsga3)
     # evolution.run(spea2)

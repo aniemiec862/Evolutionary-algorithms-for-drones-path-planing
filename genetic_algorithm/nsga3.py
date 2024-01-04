@@ -38,13 +38,22 @@ class NSGA3(GeneticAlgorithm, ABC):
         for f in range(len(fronts)):
             crowding_distances += self.crowding_distance_assignment(fronts[f], objectives, f)
 
+        # for uav in uavs:
+        #     print(uav.get_cost())
+        # for front in fronts:
+        #     print(front)
+        # for crowding_distance in crowding_distances:
+        #     print(crowding_distance.id, crowding_distance.front_rank, crowding_distance.crowding_distance_value)
+
+        crowding_distances = crowding_distances[:int(0.3*len(crowding_distances))]
+
         new_population = []
         while len(new_population) < len(uavs):
             # Tournament selection
-            parent1_id = self.tournament_selection(uavs, crowding_distances)
+            parent1_id = self.tournament_selection(crowding_distances)
             parent2_id = parent1_id
             while parent2_id == parent1_id:
-                parent2_id = self.tournament_selection(uavs, crowding_distances)
+                parent2_id = self.tournament_selection(crowding_distances)
 
             parent1 = uavs[parent1_id]
             parent2 = uavs[parent2_id]
@@ -159,13 +168,13 @@ class NSGA3(GeneticAlgorithm, ABC):
         return all(o1 <= o2 for o1, o2 in zip(objective_values1, objective_values2))
 
     @staticmethod
-    def tournament_selection(uavs, crowding_distances, tournament_size=2):
+    def tournament_selection(crowding_distances, tournament_size=2):
         # tournament selection
-        tournament_indices = random.sample(range(len(uavs)), tournament_size)
+        tournament_indices = random.sample(range(len(crowding_distances)), tournament_size)
 
         # Select the UAV with smaller front rank, and if equal, select the one with the smaller crowding distance
         winner_index = min(tournament_indices, key=lambda idx: (crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
-        return winner_index
+        return crowding_distances[winner_index].id
 
     @staticmethod
     def crossover(parent1: UAV, parent2: UAV, crossover_rate: float):

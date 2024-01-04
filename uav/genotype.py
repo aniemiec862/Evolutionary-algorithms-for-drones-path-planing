@@ -38,7 +38,6 @@ class Genotype:
             new_position = None
             while new_position is None:
                 new_position = Point2d(random.randint(0, map.width), random.randint(0, map.height))
-                print(new_position.x, new_position.y)
                 for obstacle in map.obstacles:
                     if obstacle.is_point_inside(new_position):
                         new_position = None
