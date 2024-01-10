@@ -1,4 +1,5 @@
 from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
+from genetic_algorithm.spea2 import SPEA2
 from map.map import Map
 from map.map_object import MapUAV
 from uav.genotype import Genotype
@@ -28,22 +29,23 @@ class EvolutionEngine:
             self.run_generation(gen_id, algorithm)
 
         if self.visualize_all_steps is False:
-            self.visualize_uavs(self.no_generations)
+            self.visualize_uavs(algorithm, self.no_generations)
 
     def run_generation(self, gen_id, algorithm: GeneticAlgorithm):
         for uav in self.uavs:
             uav.move()
 
         if self.visualize_all_steps is True:
-            self.visualize_uavs(gen_id + 1)
+            self.visualize_uavs(algorithm, gen_id + 1)
 
         if gen_id + 1 == self.no_generations:
             return
 
         self.uavs = algorithm.run_generation(self.uavs)
 
-    def visualize_uavs(self, generation_id: int):
-        self.map.visualize(generation_id, self.get_map_uavs())
+    def visualize_uavs(self, algorithm: GeneticAlgorithm, generation_id: int):
+        alg_name = "SPEA2" if isinstance(algorithm, SPEA2) else "NSGA3"
+        self.map.visualize(alg_name, generation_id, self.get_map_uavs())
 
     def get_map_uavs(self):
         sorted_uav_list = sorted(self.uavs, key=lambda uav: uav.get_cost())

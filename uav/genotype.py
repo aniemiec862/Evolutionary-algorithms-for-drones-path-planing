@@ -16,7 +16,7 @@ class Genotype:
 
     @classmethod
     def generate_random_with_sorted_by_distance(cls, num_moves: int, start: Point2d, finish: Point2d):
-        position_genes = [Point2d(random.randint(int(start.x), int(finish.x)), random.randint(int(start.y), int(finish.y))) for _ in range(num_moves)]
+        position_genes = [Point2d(random.randint(0, int(finish.x)), random.randint(0, int(finish.y))) for _ in range(num_moves)]
         position_genes.sort(key=lambda point: start.count_distance(point))
         return cls(position_genes, start)
 

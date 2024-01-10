@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     obstacles = [
         MapObject(Point2d(160, 120), 40, MapObjectType.OBSTACLE),
-        MapObject(Point2d(70, 90), 20, MapObjectType.OBSTACLE),
+        MapObject(Point2d(80, 90), 30, MapObjectType.OBSTACLE),
         MapObject(Point2d(100, 180), 30, MapObjectType.OBSTACLE),
         MapObject(Point2d(120, 60), 30, MapObjectType.OBSTACLE),
     ]
@@ -21,17 +21,17 @@ if __name__ == "__main__":
     map = Map(200, 200, start, objective, obstacles)
 
     no_uavs = 100
-    no_generations = 20
+    no_generations = 50
     max_moves_length = 10
     visualize_all_steps = True
     objectives = [OptimizationObjective.PATH_SCORE]
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
-    nsga3 = NSGA3(objectives, 1, 0.1, Point2d(map.width, map.height))
-    # spea2 = SPEA2(objectives, 1, 0.1, Point2d(map.width, map.height), evolution.uavs, int(0.3*no_uavs))
+    # nsga3 = NSGA3(objectives, 1, 0.1, Point2d(map.width, map.height))
+    spea2 = SPEA2(objectives, 1, 0.1, Point2d(map.width, map.height), evolution.uavs, int(0.3*no_uavs))
 
-    evolution.run(nsga3)
-    # evolution.run(spea2)
+    # evolution.run(nsga3)
+    evolution.run(spea2)
 
     # gui = GUIEngine(map)
     # gui.run()

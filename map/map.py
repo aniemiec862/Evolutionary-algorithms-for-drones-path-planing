@@ -15,7 +15,7 @@ class Map:
         self.obstacles = obstacles
         self.points = obstacles + [start, objective]
 
-    def build_plot(self, generation_id, uavs):
+    def build_plot(self, alg_name, generation_id, uavs):
         color_mapping = {
             MapObjectType.START: "green",
             MapObjectType.OBJECTIVE: "blue",
@@ -45,16 +45,16 @@ class Map:
         ax.set_ylim(0, self.height)
 
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)
-        ax.set_title(f'Generation {generation_id}')
+        ax.set_title(f'{alg_name}: generation {generation_id}')
 
         return plt
 
-    def visualize(self, generation_id: int, uavs: list[MapUAV]):
-        plt = self.build_plot(generation_id, uavs)
+    def visualize(self, alg_name, generation_id: int, uavs: list[MapUAV]):
+        plt = self.build_plot(alg_name, generation_id, uavs)
         plt.show()
 
-    def save_to_image(self, generation_id: int, uavs: list[MapUAV]):
-        plt = self.build_plot(generation_id, uavs)
+    def save_to_image(self, alg_name, generation_id: int, uavs: list[MapUAV]):
+        plt = self.build_plot(alg_name, generation_id, uavs)
         canvas = FigureCanvasAgg(plt.figure())
         canvas.draw()
         renderer = canvas.get_renderer()
