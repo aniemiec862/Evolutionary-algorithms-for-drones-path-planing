@@ -53,7 +53,7 @@ class UAV:
         return self.position.count_distance(self.objective.position) - self.objective.radius
 
     def calculate_cost(self):
-        self.cost = (self.intersection_moves * 1000 +
+        self.cost = (self.intersection_moves * 10000 +
                      self.calculate_obstacle_proximity() * 2 +
                      self.calculate_traveled_distance() * 300 +
                      self.calculate_path_smoothness() * 12)

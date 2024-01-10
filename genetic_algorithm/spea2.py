@@ -21,7 +21,7 @@ class SPEA2(GeneticAlgorithm, ABC):
         super().__init__(selected_objectives, crossover_rate, mutation_rate, map)
         self.archive_size = archive_size
         fitness_uavs = self.calculate_fitness(init_uavs)
-        self.archive = fitness_uavs
+        self.archive = fitness_uavs[:archive_size]
 
     def run_generation(self, uavs: [UAV]):
         new_population = []
