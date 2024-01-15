@@ -60,7 +60,7 @@ class NSGA3(GeneticAlgorithm, ABC):
 
             # Crossover
             offspring_genes = self.crossover(parent1, parent2, self.crossover_rate)
-            uav = UAV(Genotype(offspring_genes, parent1.genotype.start_position), uavs[0].map)
+            uav = UAV(Genotype(offspring_genes, parent1.genotype.start_position), self.map)
 
             # Mutation
             self.mutate(uav, self.mutation_rate)
@@ -188,7 +188,6 @@ class NSGA3(GeneticAlgorithm, ABC):
         else:
             return genes1.position_genes if random.random() < 0.5 else genes2.position_genes
 
-    @staticmethod
-    def mutate(uav: UAV, mutation_rate):
+    def mutate(self, uav: UAV, mutation_rate):
         if random.random() <= mutation_rate:
-            uav.genotype.mutate(uav.map)
+            uav.genotype.mutate(self.map)
