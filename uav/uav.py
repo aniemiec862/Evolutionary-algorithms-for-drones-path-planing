@@ -14,6 +14,7 @@ class UAV:
         self.position = self.start.position
         self.moves = [self.start.position] + genotype.position_genes + [self.objective.position]
         self.intersection_moves = 0
+        self.obstacle_proximity = 0
         self.cost = 0
 
     def move(self):
@@ -21,6 +22,7 @@ class UAV:
             new_position = self.moves[move_id]
             if not self.validate_can_move_to_position(new_position):
                 self.intersection_moves += 1
+            self.calculate_obstacle_proximity()
             self.position = new_position
 
         self.calculate_cost()
@@ -54,8 +56,8 @@ class UAV:
 
     def calculate_cost(self):
         self.cost = (self.intersection_moves * 10000 +
-                     self.calculate_obstacle_proximity() * 2 +
-                     self.calculate_traveled_distance() * 300 +
+                     self.obstacle_proximity * 200 +  # commenting this out keeps uavs closer to the obstacles
+                     self.calculate_traveled_distance() +
                      self.calculate_path_smoothness() * 12)
 
     def get_cost(self):
@@ -75,4 +77,4 @@ class UAV:
 
     def calculate_obstacle_proximity(self):
         min_distance = min(obstacle.distance_to_point(self.position) for obstacle in self.obstacles)
-        return math.exp(-0.2 * min_distance)
+        self.obstacle_proximity += math.exp(-0.2 * min_distance)
