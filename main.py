@@ -21,10 +21,10 @@ if __name__ == "__main__":
 
     map = Map(200, 200, start, objective, obstacles)
 
-    no_uavs = 100
-    no_generations = 200
+    no_uavs = 1000
+    no_generations = 20
     max_moves_length = 10
-    visualize_all_steps = False
+    visualize_all_steps = True
     objectives = [OptimizationObjective.PATH_SCORE]
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 

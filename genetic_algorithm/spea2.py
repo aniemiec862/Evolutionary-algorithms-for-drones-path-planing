@@ -20,12 +20,12 @@ class SPEA2(GeneticAlgorithm, ABC):
                  map: Map, init_uavs: [UAV], archive_size: int):
         super().__init__(selected_objectives, crossover_rate, mutation_rate, map)
         self.archive_size = archive_size
-        fitness_uavs = self.calculate_fitness(init_uavs)
-        self.archive = fitness_uavs[:archive_size]
+        self.archive = []
+        self.update_archive(init_uavs)
 
     def run_generation(self, uavs: [UAV]):
         new_population = []
-        while len(new_population) < len(uavs):
+        while len(new_population) < len(uavs) - self.archive_size:
             # Tournament selection
             parent1_id = self.tournament_selection()
             parent2_id = parent1_id
@@ -45,6 +45,7 @@ class SPEA2(GeneticAlgorithm, ABC):
 
             new_population.append(uav)
 
+        new_population += [item.uav for item in self.archive]
         self.update_archive(new_population)
         return new_population
 
@@ -88,6 +89,10 @@ class SPEA2(GeneticAlgorithm, ABC):
             for j in range(len(uavs)):
                 if i != j and self.dominates(uavs[i], uavs[j]):
                     strength[i] += 1
+
+        for i in range(len(uavs)):
+            for j in range(len(uavs)):
+                if i != j and self.dominates(uavs[i], uavs[j]):
                     raw_fitness[j] += strength[i]
 
         return raw_fitness
@@ -119,10 +124,7 @@ class SPEA2(GeneticAlgorithm, ABC):
         return math.sqrt(distance)
 
     def update_archive(self, new_population: [UAV]):
-        uavs = [item.uav for item in self.archive]
-        uavs += new_population
-
-        fitness_uavs = self.calculate_fitness(uavs)
+        fitness_uavs = self.calculate_fitness(new_population)
         fitness_uavs_ordered = sorted(fitness_uavs, key=lambda fitness_uav: fitness_uav.fitness)
         self.archive = fitness_uavs_ordered[:self.archive_size]
 
