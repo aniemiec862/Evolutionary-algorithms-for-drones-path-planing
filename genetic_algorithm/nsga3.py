@@ -17,38 +17,15 @@ class CrowdingDistanceResult:
 
 
 class NSGA3(GeneticAlgorithm, ABC):
-    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, map: Map):
+    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, map: Map, evaluate_whole_population: bool):
         super().__init__(selected_objectives, crossover_rate, mutation_rate, map)
+        self.evaluate_whole_population = evaluate_whole_population
 
     def run_generation(self, uavs: [UAV]):
-        objectives = []
-        for uav in uavs:
-            objective_values = [0] * len(self.selected_objectives)
-            for objective_id in range(len(self.selected_objectives)):
-                objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
-            objectives.append(objective_values)
+        crowding_distances = self.rank_uavs(uavs)
 
-        # Non-dominated sorting
-        fronts = self.non_dominated_sort(objectives)
-
-        # reference_points = self.generate_reference_points(len(self.selected_objectives), len(uavs))
-
-        # Crowding distance calculation
-        crowding_distances = []
-        for f in range(len(fronts)):
-            crowding_distances += self.crowding_distance_assignment(fronts[f], objectives, f)
-
-        # for uav in uavs:
-        #     print(uav.get_cost())
-        # for front in fronts:
-        #     print(front)
-        # for crowding_distance in crowding_distances:
-        #     print(crowding_distance.id, crowding_distance.front_rank, crowding_distance.crowding_distance_value)
-
-        crowding_distances = crowding_distances[:int(0.3*len(crowding_distances))]
-
-        new_population = []
-        while len(new_population) < len(uavs):
+        children = []
+        while len(children) < len(uavs):
             # Tournament selection
             parent1_id = self.tournament_selection(crowding_distances)
             parent2_id = parent1_id
@@ -67,8 +44,39 @@ class NSGA3(GeneticAlgorithm, ABC):
 
             uav.genotype.sort_by_distance()
 
-            new_population.append(uav)
-        return new_population
+            children.append(uav)
+
+        if self.evaluate_whole_population:
+            whole_population = uavs + children
+            crowding_distances = self.rank_uavs(whole_population)
+            crowding_distances = sorted(crowding_distances, key=lambda x: (x.front_rank, x.crowding_distance_value))
+
+            new_population = []
+            for cd in crowding_distances[:len(uavs)]:
+                uav = whole_population[cd.id]
+                new_population.append(uav)
+
+            return new_population
+        else:
+            return children
+
+    def rank_uavs(self, uavs: [UAV]):
+        objectives = []
+        for uav in uavs:
+            objective_values = [0] * len(self.selected_objectives)
+            for objective_id in range(len(self.selected_objectives)):
+                objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
+            objectives.append(objective_values)
+
+        # Non-dominated sorting
+        fronts = self.non_dominated_sort(objectives)
+
+        # Crowding distance calculation
+        crowding_distances = []
+        for f in range(len(fronts)):
+            crowding_distances += self.crowding_distance_assignment(fronts[f], objectives, f)
+
+        return crowding_distances
 
     @staticmethod
     def objective_function(uav: UAV, objective: OptimizationObjective):
@@ -133,10 +141,6 @@ class NSGA3(GeneticAlgorithm, ABC):
         # to solutions in that front. The fronts are ordered based on dominance relationships, with the first front
         # containing non-dominated solutions, and so on.
         return fronts
-
-    @staticmethod
-    def generate_reference_points(num_objectives, num_reference_points):
-        return [[random.uniform(0, 1) for _ in range(num_objectives)] for _ in range(num_reference_points)]
 
     # Crowding distance assignment
     @staticmethod
