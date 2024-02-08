@@ -23,6 +23,7 @@ class NSGA3(GeneticAlgorithm, ABC):
 
     def run_generation(self, uavs: [UAV]):
         crowding_distances = self.rank_uavs(uavs)
+        crowding_distances = crowding_distances[:int(0.3*len(crowding_distances))]
 
         children = []
         while len(children) < len(uavs):
