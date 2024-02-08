@@ -22,7 +22,7 @@ class NSGA3(GeneticAlgorithm, ABC):
         self.evaluate_whole_population = evaluate_whole_population
 
     def run_generation(self, uavs: [UAV]):
-        crowding_distances = self.rank_uavs(uavs)
+        crowding_distances = self.rank_uavs(uavs, True)
         crowding_distances = crowding_distances[:int(0.3*len(crowding_distances))]
 
         children = []
@@ -49,8 +49,7 @@ class NSGA3(GeneticAlgorithm, ABC):
 
         if self.evaluate_whole_population:
             whole_population = uavs + children
-            crowding_distances = self.rank_uavs(whole_population)
-            crowding_distances = sorted(crowding_distances, key=lambda x: (x.front_rank, x.crowding_distance_value))
+            crowding_distances = self.rank_uavs(whole_population, False)
 
             new_population = []
             for cd in crowding_distances[:len(uavs)]:
@@ -61,7 +60,7 @@ class NSGA3(GeneticAlgorithm, ABC):
         else:
             return children
 
-    def rank_uavs(self, uavs: [UAV]):
+    def rank_uavs(self, uavs: [UAV], calculate_all_distances: bool):
         objectives = []
         for uav in uavs:
             objective_values = [0] * len(self.selected_objectives)
@@ -76,6 +75,8 @@ class NSGA3(GeneticAlgorithm, ABC):
         crowding_distances = []
         for f in range(len(fronts)):
             crowding_distances += self.crowding_distance_assignment(fronts[f], objectives, f)
+            if calculate_all_distances is False and len(crowding_distances) >= (len(uavs) / 2):
+                break
 
         return crowding_distances
 
