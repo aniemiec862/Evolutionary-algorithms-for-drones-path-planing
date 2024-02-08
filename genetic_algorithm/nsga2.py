@@ -9,36 +9,29 @@ from uav.genotype import Genotype
 from uav.uav import UAV
 
 
-class FrontUav:
-    def __init__(self, id: int, front_rank: int):
+class CrowdingDistanceResult:
+    def __init__(self, id: int, front_rank: int, crowding_distance_value: float):
         self.id = id
         self.front_rank = front_rank
+        self.crowding_distance_value = crowding_distance_value
 
-class NSGA3(GeneticAlgorithm, ABC):
+
+class NSGA2(GeneticAlgorithm, ABC):
     def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, map: Map, evaluate_whole_population: bool):
         super().__init__(selected_objectives, crossover_rate, mutation_rate, map)
         self.evaluate_whole_population = evaluate_whole_population
 
     def run_generation(self, uavs: [UAV]):
-        fronts = self.calculate_fronts(uavs)
-        best_uavs_number = 0.3 * len(uavs)
-
-        parents = []
-        for front_id in range(len(fronts)):
-            if len(parents) == best_uavs_number:
-                break
-            for id in fronts[front_id]:
-                parents.append(FrontUav(id, front_id))
-                if len(parents) == best_uavs_number:
-                    break
+        crowding_distances = self.rank_uavs(uavs, True)
+        crowding_distances = crowding_distances[:int(0.3*len(crowding_distances))]
 
         children = []
         while len(children) < len(uavs):
             # Tournament selection
-            parent1_id = self.tournament_selection(parents)
+            parent1_id = self.tournament_selection(crowding_distances)
             parent2_id = parent1_id
             while parent2_id == parent1_id:
-                parent2_id = self.tournament_selection(parents)
+                parent2_id = self.tournament_selection(crowding_distances)
 
             parent1 = uavs[parent1_id]
             parent2 = uavs[parent2_id]
@@ -56,12 +49,18 @@ class NSGA3(GeneticAlgorithm, ABC):
 
         if self.evaluate_whole_population:
             whole_population = uavs + children
-            ranked_uavs = self.rank_uavs(whole_population)
-            return ranked_uavs[:len(uavs)]
+            crowding_distances = self.rank_uavs(whole_population, False)
+
+            new_population = []
+            for cd in crowding_distances[:len(uavs)]:
+                uav = whole_population[cd.id]
+                new_population.append(uav)
+
+            return new_population
         else:
             return children
 
-    def calculate_fronts(self, uavs: [UAV]):
+    def rank_uavs(self, uavs: [UAV], calculate_all_distances: bool):
         objectives = []
         for uav in uavs:
             objective_values = [0] * len(self.selected_objectives)
@@ -72,28 +71,14 @@ class NSGA3(GeneticAlgorithm, ABC):
         # Non-dominated sorting
         fronts = self.non_dominated_sort(objectives)
 
-        return fronts
-
-    def rank_uavs(self, uavs: [UAV]):
-        fronts = self.calculate_fronts(uavs)
-
-        new_population = []
-        for front in fronts:
-            new_len = len(new_population) + len(front)
-
-            if new_len < (len(uavs) / 2):
-                new_population += front
-            elif new_len <= (len(uavs) / 2):
-                new_population += front
+        # Crowding distance calculation
+        crowding_distances = []
+        for f in range(len(fronts)):
+            crowding_distances += self.crowding_distance_assignment(fronts[f], objectives, f)
+            if calculate_all_distances is False and len(crowding_distances) >= (len(uavs) / 2):
                 break
-            else:
-                self.assign_reference_points(front)
 
-        new_population = list(map(lambda id: uavs[id], new_population))
-        return new_population
-
-    def assign_reference_points(self, front):
-        return None
+        return crowding_distances
 
     @staticmethod
     def objective_function(uav: UAV, objective: OptimizationObjective):
@@ -159,20 +144,43 @@ class NSGA3(GeneticAlgorithm, ABC):
         # containing non-dominated solutions, and so on.
         return fronts
 
+    # Crowding distance assignment
+    @staticmethod
+    def crowding_distance_assignment(front, objectives, front_rank):
+        population_size = len(front)
+        distances = [0] * population_size
+        for objective_index in range(len(objectives[0])):
+            # sort by current objective value
+            front = sorted(front, key=lambda x: objectives[x][objective_index])
+            distances[0] = math.inf
+            distances[population_size - 1] = math.inf
+
+            objective_min = objectives[front[0]][objective_index]
+            objective_max = objectives[front[population_size - 1]][objective_index]
+
+            if objective_max == objective_min:
+                continue
+
+            for i in range(1, population_size - 1):
+                distances[i] += (objectives[front[i + 1]][objective_index] - objectives[front[i - 1]][objective_index]) \
+                                / (objective_max - objective_min)
+
+        # Associate distances with UAV and objective IDs
+        return [CrowdingDistanceResult(front[i], front_rank, distances[i]) for i in range(population_size)]
+
     @staticmethod
     def dominates(objective_values1, objective_values2):
         # Returns True if objective_values1 dominates objective_values2, False otherwise
         return all(o1 <= o2 for o1, o2 in zip(objective_values1, objective_values2))
 
     @staticmethod
-    def tournament_selection(parents):
+    def tournament_selection(crowding_distances, tournament_size=2):
         # tournament selection
-        tournament_indices = random.sample(range(len(parents)), 2)
+        tournament_indices = random.sample(range(len(crowding_distances)), tournament_size)
 
-        parent1 = parents[tournament_indices[0]]
-        parent2 = parents[tournament_indices[1]]
-
-        return parent1.id if parent1.front_rank < parent2.front_rank else parent2.id
+        # Select the UAV with smaller front rank, and if equal, select the one with the smaller crowding distance
+        winner_index = min(tournament_indices, key=lambda idx: (crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
+        return crowding_distances[winner_index].id
 
     @staticmethod
     def crossover(parent1: UAV, parent2: UAV, crossover_rate: float):

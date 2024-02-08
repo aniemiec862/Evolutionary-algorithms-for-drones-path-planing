@@ -1,5 +1,6 @@
 from evolution.evolution_engine import EvolutionEngine
 from evolution.objective import OptimizationObjective
+from genetic_algorithm.nsga2 import NSGA2
 from genetic_algorithm.nsga3 import NSGA3
 from genetic_algorithm.spea2 import SPEA2
 from gui.gui_engine import GUIEngine
@@ -12,7 +13,7 @@ if __name__ == "__main__":
     objective = MapObject(Point2d(180, 180), 20, MapObjectType.OBJECTIVE)
 
     obstacles = [
-        # MapObject(Point2d(25, 60), 30, MapObjectType.OBSTACLE),
+        MapObject(Point2d(25, 60), 30, MapObjectType.OBSTACLE),
         MapObject(Point2d(160, 120), 40, MapObjectType.OBSTACLE),
         MapObject(Point2d(80, 90), 30, MapObjectType.OBSTACLE),
         MapObject(Point2d(100, 180), 30, MapObjectType.OBSTACLE),
@@ -22,15 +23,17 @@ if __name__ == "__main__":
     map = Map(200, 200, start, objective, obstacles)
 
     no_uavs = 500
-    no_generations = 100
+    no_generations = 20
     max_moves_length = 10
-    visualize_all_steps = False
+    visualize_all_steps = True
     objectives = [OptimizationObjective.PATH_SCORE]
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
-    nsga3 = NSGA3(objectives, 0.8, 0.05, map, False)
+    # nsga2 = NSGA2(objectives, 0.8, 0.05, map, True)
+    nsga3 = NSGA3(objectives, 0.8, 0.05, map, True)
     # spea2 = SPEA2(objectives, 1, 0.1, map, evolution.uavs, int(0.3*no_uavs))
 
+    # evolution.run(nsga2)
     evolution.run(nsga3)
     # evolution.run(spea2)
 
