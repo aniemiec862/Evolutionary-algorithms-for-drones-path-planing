@@ -1,6 +1,6 @@
-import math
 import random
 from abc import ABC
+import numpy as np
 
 from evolution.objective import OptimizationObjective
 from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
@@ -20,7 +20,8 @@ class NSGA3(GeneticAlgorithm, ABC):
         self.evaluate_whole_population = evaluate_whole_population
 
     def run_generation(self, uavs: [UAV]):
-        fronts = self.calculate_fronts(uavs)
+        objectives = self.calculate_objective_values(uavs)
+        fronts = self.non_dominated_sort(objectives)
         best_uavs_number = 0.3 * len(uavs)
 
         parents = []
@@ -61,21 +62,18 @@ class NSGA3(GeneticAlgorithm, ABC):
         else:
             return children
 
-    def calculate_fronts(self, uavs: [UAV]):
+    def calculate_objective_values(self, uavs):
         objectives = []
         for uav in uavs:
             objective_values = [0] * len(self.selected_objectives)
             for objective_id in range(len(self.selected_objectives)):
                 objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
             objectives.append(objective_values)
-
-        # Non-dominated sorting
-        fronts = self.non_dominated_sort(objectives)
-
-        return fronts
+        return objectives
 
     def rank_uavs(self, uavs: [UAV]):
-        fronts = self.calculate_fronts(uavs)
+        objectives = self.calculate_objective_values(uavs)
+        fronts = self.non_dominated_sort(objectives)
 
         new_population = []
         for front in fronts:
@@ -87,13 +85,48 @@ class NSGA3(GeneticAlgorithm, ABC):
                 new_population += front
                 break
             else:
-                self.assign_reference_points(front)
+                self.assign_reference_points(uavs, objectives, new_population, front)
 
         new_population = list(map(lambda id: uavs[id], new_population))
         return new_population
 
-    def assign_reference_points(self, front):
+    def assign_reference_points(self, uavs, objectives, new_population, front):
+        grid_intervals = self.split_space(objectives)
+
+
         return None
+
+    @staticmethod
+    def split_space(objectives):
+        grid_density = 10
+        min_values = [min(column) for column in zip(*objectives)]
+        max_values = [max(column) for column in zip(*objectives)]
+
+        grid_density = [grid_density] * len(min_values)
+
+        # Calculate step sizes for each dimension
+        step_sizes = [(max_val - min_val) / num_part for min_val, max_val, num_part in
+                      zip(min_values, max_values, grid_density)]
+
+        # Generate evenly spaced intervals along each dimension
+        intervals = [[min_val + i * step_size for i in range(num_part + 1)] for min_val, step_size, num_part in
+                     zip(min_values, step_sizes, grid_density)]
+
+        return intervals
+
+    @staticmethod
+    def assign_points_to_intervals(points, intervals):
+        counts = [0] * (len(intervals) - 1)
+
+        for point in points:
+            index = tuple(
+                min(len(interval) - 2,
+                    max(0, next((i for i, x in enumerate(interval) if x > coord), len(interval) - 2)))
+                for coord, interval in zip(point, intervals)
+            )
+            counts[index] += 1
+
+        return counts
 
     @staticmethod
     def objective_function(uav: UAV, objective: OptimizationObjective):
