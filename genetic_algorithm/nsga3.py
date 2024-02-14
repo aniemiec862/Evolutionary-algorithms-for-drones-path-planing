@@ -85,16 +85,40 @@ class NSGA3(GeneticAlgorithm, ABC):
                 new_population += front
                 break
             else:
-                self.assign_reference_points(uavs, objectives, new_population, front)
+                missing_no_uavs = new_len - (len(uavs) / 2)
+                new_population += self.assign_reference_points(uavs, objectives, new_population, front, missing_no_uavs)
 
         new_population = list(map(lambda id: uavs[id], new_population))
         return new_population
 
-    def assign_reference_points(self, uavs, objectives, new_population, front):
+    def assign_reference_points(self, uavs, objectives, new_population, front, missing_no_uavs):
+        # [[val_min, mid, val_max], [val_min, mid, val_max], [val_min, mid, val_max]]
         grid_intervals = self.split_space(objectives)
+        # counted_points = [
+        #     [1, 0, 5],  # Objective 1
+        #     [0, 2, 4]  # Objective 2
+        # ]
+        counted_points = self.assign_population_to_grid(grid_intervals, new_population, uavs)
 
+        # Combine counts with intervals
+        intervals_with_counts = [(obj_id, interval_idx, count)
+                                 for obj_id, counts in enumerate(counted_points)
+                                 for interval_idx, count in enumerate(counts)]
+        sorted_intervals = sorted(intervals_with_counts, key=lambda x: x[2])
 
-        return None
+        uavs_assigned_to_min_count_intervals = []
+        for obj_id, interval_idx, _ in sorted_intervals:
+            if len(uavs_assigned_to_min_count_intervals) == missing_no_uavs:
+                break
+            for uav_id in front:
+                uav = uavs[uav_id]
+                obj_value = self.objective_function(uav, objectives[obj_id])
+                interval = grid_intervals[obj_id][interval_idx]
+                if obj_value >= interval:
+                    uavs_assigned_to_min_count_intervals.append(uav_id)
+                    break
+
+        return uavs_assigned_to_min_count_intervals
 
     @staticmethod
     def split_space(objectives):
@@ -114,19 +138,19 @@ class NSGA3(GeneticAlgorithm, ABC):
 
         return intervals
 
-    @staticmethod
-    def assign_points_to_intervals(points, intervals):
-        counts = [0] * (len(intervals) - 1)
+    def assign_population_to_grid(self, intervals, new_population, uavs):
+        objectives_count = [[0 for _ in range(len(intervals[0]) - 1)] for _ in range(len(self.selected_objectives))]
 
-        for point in points:
-            index = tuple(
-                min(len(interval) - 2,
-                    max(0, next((i for i, x in enumerate(interval) if x > coord), len(interval) - 2)))
-                for coord, interval in zip(point, intervals)
-            )
-            counts[index] += 1
+        for uav_id in new_population:
+            uav = uavs[uav_id]
+            for obj_id, objective in enumerate(self.selected_objectives):
+                obj_value = self.objective_function(uav, objective)
+                for interval_id, interval in enumerate(intervals[obj_id]):
+                    if obj_value >= interval:
+                        objectives_count[obj_id][interval_id] += 1
+                        break
 
-        return counts
+        return objectives_count
 
     @staticmethod
     def objective_function(uav: UAV, objective: OptimizationObjective):
