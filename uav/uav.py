@@ -16,6 +16,7 @@ class UAV:
         self.intersection_moves = 0
         self.obstacle_proximity = 0
         self.path_length = 0
+        self.path_smoothness = 0
         self.cost = 0
         self.has_already_moved = False
 
@@ -31,6 +32,7 @@ class UAV:
             self.calculate_obstacle_proximity()
             self.position = new_position
 
+        self.calculate_path_smoothness()
         self.calculate_cost()
         self.has_already_moved = True
 
@@ -65,7 +67,7 @@ class UAV:
         self.cost = (self.intersection_moves * 10000 +
                      self.obstacle_proximity * 200 +  # commenting this out keeps uavs closer to the obstacles
                      self.path_length +
-                     self.calculate_path_smoothness() * 12)
+                     self.path_smoothness * 12)
 
     def get_cost(self):
         if self.path_length == 0:
@@ -82,7 +84,7 @@ class UAV:
             pos3 = self.moves[move_id + 2]
             angle = Point2d.calculate_angle(pos1, pos2, pos3)
             angles.append(angle)
-        return max(angles) if angles else 0
+        self.path_smoothness = max(angles) if angles else 0
 
     def calculate_obstacle_proximity(self):
         min_distance = min(obstacle.distance_to_point(self.position) for obstacle in self.obstacles)

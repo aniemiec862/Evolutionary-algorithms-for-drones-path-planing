@@ -1,4 +1,5 @@
 from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
+from genetic_algorithm.nsga3 import NSGA3
 from genetic_algorithm.spea2 import SPEA2
 from map.map import Map
 from map.map_object import MapUAV
@@ -44,7 +45,8 @@ class EvolutionEngine:
         self.uavs = algorithm.run_generation(self.uavs)
 
     def visualize_uavs(self, algorithm: GeneticAlgorithm, generation_id: int):
-        alg_name = "SPEA2" if isinstance(algorithm, SPEA2) else "NSGA3"
+        alg_name = "SPEA2" if isinstance(algorithm, SPEA2) else (
+            "NSGA3" if isinstance(algorithm, NSGA3) else "NSGA2")
         self.map.visualize(alg_name, generation_id, self.get_map_uavs())
 
     def get_map_uavs(self):

@@ -28,7 +28,7 @@ class GeneticAlgorithm(ABC):
             return uav.path_length
 
         if objective == OptimizationObjective.PATH_SMOOTHNESS:
-            return uav.calculate_path_smoothness()
+            return uav.path_smoothness
 
         if objective == OptimizationObjective.OBSTACLE_PROXIMITY:
             return uav.obstacle_proximity
