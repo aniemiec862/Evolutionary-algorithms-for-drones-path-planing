@@ -1,6 +1,5 @@
 import random
 from abc import ABC
-import numpy as np
 
 from evolution.objective import OptimizationObjective
 from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
@@ -151,23 +150,6 @@ class NSGA3(GeneticAlgorithm, ABC):
                         break
 
         return objectives_count
-
-    @staticmethod
-    def objective_function(uav: UAV, objective: OptimizationObjective):
-        # Example: Assume a bi-objective optimization problem
-        # where we aim to minimize two objectives: f1 and f2
-
-        # # Objective 1: Minimize f1
-        if objective == OptimizationObjective.PATH_SCORE:
-            f1 = uav.get_cost()
-            return f1
-
-        # Objective 2: Minimize f2
-        # if objective == OptimizationObjective.TRAVELED_DISTANCE:
-        #     f2 = uav.get_cost()
-        #     return f2
-
-        # Add more objectives as needed for multi-objective optimization
 
     def non_dominated_sort(self, objectives):
         population_size = len(objectives)

@@ -49,23 +49,6 @@ class SPEA2(GeneticAlgorithm, ABC):
         self.update_archive(new_population)
         return new_population
 
-    @staticmethod
-    def objective_function(uav: UAV, objective: OptimizationObjective):
-        # Example: Assume a bi-objective optimization problem
-        # where we aim to minimize two objectives: f1 and f2
-
-        # # Objective 1: Minimize f1
-        if objective == OptimizationObjective.PATH_SCORE:
-            f1 = uav.get_cost()
-            return f1
-
-        # Objective 2: Minimize f2
-        # if objective == OptimizationObjective.TRAVELED_DISTANCE:
-        #     f2 = uav.get_cost()
-        #     return f2
-
-        # Add more objectives as needed for multi-objective optimization
-
     def calculate_fitness(self, uavs: [UAV]):
         raw_fitness = self.calculate_raw_fitness(uavs)
         k_neighbour = math.floor(math.sqrt(len(uavs) + self.archive_size))
