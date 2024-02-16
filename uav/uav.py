@@ -17,10 +17,11 @@ class UAV:
         self.obstacle_proximity = 0
         self.path_length = 0
         self.cost = 0
+        self.has_already_moved = False
 
     def move(self):
-        print("BEFORE")
-        print(self.cost, self.position.x, self.position.y, self.obstacle_proximity, self.intersection_moves)
+        if self.has_already_moved is True:
+            return
 
         for move_id in range(1, len(self.moves)):
             new_position = self.moves[move_id]
@@ -31,8 +32,7 @@ class UAV:
             self.position = new_position
 
         self.calculate_cost()
-        print("AFTER")
-        print(self.cost, self.position.x, self.position.y, self.obstacle_proximity, self.intersection_moves)
+        self.has_already_moved = True
 
     def get_moves(self):
         return self.moves
@@ -68,6 +68,8 @@ class UAV:
                      self.calculate_path_smoothness() * 12)
 
     def get_cost(self):
+        if self.path_length == 0:
+            self.move()
         if self.cost == 0:
             self.calculate_cost()
         return self.cost

@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     map = Map(200, 200, start, objective, obstacles)
 
-    no_uavs = 10
+    no_uavs = 500
     no_generations = 20
     max_moves_length = 7
     visualize_all_steps = False
