@@ -8,10 +8,15 @@ from uav.genotype import Genotype
 from uav.uav import UAV
 
 
-class FrontUav:
-    def __init__(self, id: int, objectives, front_rank: int = None):
+class ObjectiveUav:
+    def __init__(self, id: int, objectives, encountered_obstacles: int):
         self.id = id
         self.objectives = objectives
+        self.encountered_obstacles = encountered_obstacles
+
+class FrontUav:
+    def __init__(self, id: int, front_rank: int = None):
+        self.id = id
         self.front_rank = front_rank
 
 class NSGA3(GeneticAlgorithm, ABC):
@@ -30,7 +35,7 @@ class NSGA3(GeneticAlgorithm, ABC):
             if len(parents) == best_uavs_number:
                 break
             for id in fronts[front_id]:
-                parents.append(FrontUav(id, [], front_id))
+                parents.append(FrontUav(id, front_id))
                 if len(parents) == best_uavs_number:
                     break
 
@@ -69,7 +74,7 @@ class NSGA3(GeneticAlgorithm, ABC):
             objective_values = [0] * len(self.selected_objectives)
             for objective_id in range(len(self.selected_objectives)):
                 objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
-            objectives.append(FrontUav(id, objective_values))
+            objectives.append(ObjectiveUav(id, objective_values, self.objective_function(uav, OptimizationObjective.ENCOUNTERED_OBSTACLES)))
         return objectives
 
     def rank_uavs(self, uavs: [UAV]):
@@ -154,14 +159,14 @@ class NSGA3(GeneticAlgorithm, ABC):
         return objectives_count
 
     def create_fronts_by_obstacles(self, uavs: [FrontUav]):
-        sorted_by_obstacles = sorted(uavs, key=lambda x: x.objectives[0])
+        sorted_by_obstacles = sorted(uavs, key=lambda x: x.encountered_obstacles)
 
         global_fronts = []
         current_obstacle_front_uavs = []
-        current_key = uavs[0].objectives[0]
+        current_key = uavs[0].encountered_obstacles
 
         for uav in sorted_by_obstacles:
-            uav_objective = uav.objectives[0]
+            uav_objective = uav.encountered_obstacles
             if uav_objective != current_key:
                 if current_obstacle_front_uavs:
                     global_fronts.append(self.process_front(current_obstacle_front_uavs))

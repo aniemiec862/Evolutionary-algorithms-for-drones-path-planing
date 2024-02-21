@@ -9,9 +9,10 @@ from uav.genotype import Genotype
 from uav.uav import UAV
 
 class ObjectiveUav:
-    def __init__(self, id: int, objectives):
+    def __init__(self, id: int, objectives, encountered_obstacles: int):
         self.id = id
         self.objectives = objectives
+        self.encountered_obstacles = encountered_obstacles
 
 class CrowdingDistanceResult:
     def __init__(self, id: int, front_rank: int, crowding_distance_value: float):
@@ -72,7 +73,7 @@ class NSGA2(GeneticAlgorithm, ABC):
             for objective_id in range(len(self.selected_objectives)):
                 objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
             objectives.append(objective_values)
-            objectives_uavs.append(ObjectiveUav(id, objective_values))
+            objectives_uavs.append(ObjectiveUav(id, objective_values, self.objective_function(uav, OptimizationObjective.ENCOUNTERED_OBSTACLES)))
 
         fronts = self.create_fronts_by_obstacles(objectives_uavs)
 
@@ -86,14 +87,14 @@ class NSGA2(GeneticAlgorithm, ABC):
         return crowding_distances
 
     def create_fronts_by_obstacles(self, uavs: [ObjectiveUav]):
-        sorted_by_obstacles = sorted(uavs, key=lambda x: x.objectives[0])
+        sorted_by_obstacles = sorted(uavs, key=lambda x: x.encountered_obstacles)
 
         global_fronts = []
         current_obstacle_front_uavs = []
-        current_key = uavs[0].objectives[0]
+        current_key = uavs[0].encountered_obstacles
 
         for uav in sorted_by_obstacles:
-            uav_objective = uav.objectives[0]
+            uav_objective = uav.encountered_obstacles
             if uav_objective != current_key:
                 if current_obstacle_front_uavs:
                     global_fronts.append(self.process_front(current_obstacle_front_uavs))
