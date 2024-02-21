@@ -9,18 +9,20 @@ from uav.uav import UAV
 
 
 class FrontUav:
-    def __init__(self, id: int, front_rank: int):
+    def __init__(self, id: int, objectives, front_rank: int = None):
         self.id = id
+        self.objectives = objectives
         self.front_rank = front_rank
 
 class NSGA3(GeneticAlgorithm, ABC):
-    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, map: Map, evaluate_whole_population: bool):
+    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float,
+                 map: Map, evaluate_whole_population: bool):
         super().__init__(selected_objectives, crossover_rate, mutation_rate, map)
         self.evaluate_whole_population = evaluate_whole_population
 
     def run_generation(self, uavs: [UAV]):
         objectives = self.calculate_objective_values(uavs)
-        fronts = self.non_dominated_sort(objectives)
+        fronts = self.create_fronts_by_obstacles(objectives)
         best_uavs_number = 0.3 * len(uavs)
 
         parents = []
@@ -28,7 +30,7 @@ class NSGA3(GeneticAlgorithm, ABC):
             if len(parents) == best_uavs_number:
                 break
             for id in fronts[front_id]:
-                parents.append(FrontUav(id, front_id))
+                parents.append(FrontUav(id, [], front_id))
                 if len(parents) == best_uavs_number:
                     break
 
@@ -63,16 +65,16 @@ class NSGA3(GeneticAlgorithm, ABC):
 
     def calculate_objective_values(self, uavs):
         objectives = []
-        for uav in uavs:
+        for id, uav in enumerate(uavs):
             objective_values = [0] * len(self.selected_objectives)
             for objective_id in range(len(self.selected_objectives)):
                 objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
-            objectives.append(objective_values)
+            objectives.append(FrontUav(id, objective_values))
         return objectives
 
     def rank_uavs(self, uavs: [UAV]):
         objectives = self.calculate_objective_values(uavs)
-        fronts = self.non_dominated_sort(objectives)
+        fronts = self.create_fronts_by_obstacles(objectives)
 
         new_population = []
         for front in fronts:
@@ -150,6 +152,37 @@ class NSGA3(GeneticAlgorithm, ABC):
                         break
 
         return objectives_count
+
+    def create_fronts_by_obstacles(self, uavs: [FrontUav]):
+        sorted_by_obstacles = sorted(uavs, key=lambda x: x.objectives[0])
+
+        global_fronts = []
+        current_obstacle_front_uavs = []
+        current_key = uavs[0].objectives[0]
+
+        for uav in sorted_by_obstacles:
+            uav_objective = uav.objectives[0]
+            if uav_objective != current_key:
+                if current_obstacle_front_uavs:
+                    global_fronts.append(self.process_front(current_obstacle_front_uavs))
+                current_key = uav_objective
+                current_obstacle_front_uavs = [uav]
+            else:
+                current_obstacle_front_uavs.append(uav)
+
+        if current_obstacle_front_uavs:
+            global_fronts.append(self.process_front(current_obstacle_front_uavs))
+
+        flattened_result = [inner_list for outer_list in global_fronts for inner_list in outer_list]
+
+        return flattened_result
+
+    def process_front(self, current_obstacle_front_uavs):
+        current_obstacle_front_objectives = [uav.objectives for uav in current_obstacle_front_uavs]
+        current_obstacle_fronts = self.non_dominated_sort(current_obstacle_front_objectives)
+        current_obstacle_front_mapped_to_uavs_ids = [[current_obstacle_front_uavs[id].id for id in front] for front in
+                                                     current_obstacle_fronts]
+        return current_obstacle_front_mapped_to_uavs_ids
 
     def non_dominated_sort(self, objectives):
         population_size = len(objectives)

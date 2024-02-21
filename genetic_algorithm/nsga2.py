@@ -8,6 +8,10 @@ from map.map import Map
 from uav.genotype import Genotype
 from uav.uav import UAV
 
+class ObjectiveUav:
+    def __init__(self, id: int, objectives):
+        self.id = id
+        self.objectives = objectives
 
 class CrowdingDistanceResult:
     def __init__(self, id: int, front_rank: int, crowding_distance_value: float):
@@ -62,14 +66,15 @@ class NSGA2(GeneticAlgorithm, ABC):
 
     def rank_uavs(self, uavs: [UAV], calculate_all_distances: bool):
         objectives = []
-        for uav in uavs:
+        objectives_uavs = []
+        for id, uav in enumerate(uavs):
             objective_values = [0] * len(self.selected_objectives)
             for objective_id in range(len(self.selected_objectives)):
                 objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
             objectives.append(objective_values)
+            objectives_uavs.append(ObjectiveUav(id, objective_values))
 
-        # Non-dominated sorting
-        fronts = self.non_dominated_sort(objectives)
+        fronts = self.create_fronts_by_obstacles(objectives_uavs)
 
         # Crowding distance calculation
         crowding_distances = []
@@ -79,6 +84,37 @@ class NSGA2(GeneticAlgorithm, ABC):
                 break
 
         return crowding_distances
+
+    def create_fronts_by_obstacles(self, uavs: [ObjectiveUav]):
+        sorted_by_obstacles = sorted(uavs, key=lambda x: x.objectives[0])
+
+        global_fronts = []
+        current_obstacle_front_uavs = []
+        current_key = uavs[0].objectives[0]
+
+        for uav in sorted_by_obstacles:
+            uav_objective = uav.objectives[0]
+            if uav_objective != current_key:
+                if current_obstacle_front_uavs:
+                    global_fronts.append(self.process_front(current_obstacle_front_uavs))
+                current_key = uav_objective
+                current_obstacle_front_uavs = [uav]
+            else:
+                current_obstacle_front_uavs.append(uav)
+
+        if current_obstacle_front_uavs:
+            global_fronts.append(self.process_front(current_obstacle_front_uavs))
+
+        flattened_result = [inner_list for outer_list in global_fronts for inner_list in outer_list]
+
+        return flattened_result
+
+    def process_front(self, current_obstacle_front_uavs):
+        current_obstacle_front_objectives = [uav.objectives for uav in current_obstacle_front_uavs]
+        current_obstacle_fronts = self.non_dominated_sort(current_obstacle_front_objectives)
+        current_obstacle_front_mapped_to_uavs_ids = [[current_obstacle_front_uavs[id].id for id in front] for front in
+                                                     current_obstacle_fronts]
+        return current_obstacle_front_mapped_to_uavs_ids
 
     def non_dominated_sort(self, objectives):
         population_size = len(objectives)
