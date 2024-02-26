@@ -107,8 +107,11 @@ class SPEA2(GeneticAlgorithm, ABC):
         return math.sqrt(distance)
 
     def update_archive(self, new_population: [UAV]):
+        for uav in new_population:
+            uav.move()
+
         fitness_uavs = self.calculate_fitness(new_population)
-        fitness_uavs_ordered = sorted(fitness_uavs, key=lambda fitness_uav: fitness_uav.fitness)
+        fitness_uavs_ordered = sorted(fitness_uavs, key=lambda fitness_uav: (fitness_uav.uav.intersection_moves, fitness_uav.fitness))
         self.archive = fitness_uavs_ordered[:self.archive_size]
 
     def tournament_selection(self, tournament_size=2):

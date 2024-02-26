@@ -32,12 +32,12 @@ if __name__ == "__main__":
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
     # nsga2 = NSGA2(objectives, 0.8, 0.05, map, True)
-    nsga3 = NSGA3(objectives, 0.8, 0.05, map, True)
-    # spea2 = SPEA2(objectives, 0.8, 0.05, map, evolution.uavs, int(0.3*no_uavs))
+    # nsga3 = NSGA3(objectives, 0.8, 0.05, map, True)
+    spea2 = SPEA2(objectives, 0.8, 0.05, map, evolution.uavs, int(0.3*no_uavs))
 
     # evolution.run(nsga2)
-    evolution.run(nsga3)
-    # evolution.run(spea2)
+    # evolution.run(nsga3)
+    evolution.run(spea2)
 
     # gui = GUIEngine(map)
     # gui.run()
