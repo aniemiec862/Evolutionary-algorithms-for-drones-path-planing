@@ -52,11 +52,12 @@ class NSGA3(GeneticAlgorithm, ABC):
 
             # Crossover
             offspring_genes = self.crossover(parent1, parent2, self.crossover_rate)
-            uav = UAV(Genotype(offspring_genes, parent1.genotype.start_position), self.map)
+            uav = UAV(Genotype(offspring_genes, parent1.genotype.start_position, parent1.genotype.subobjectives), self.map)
 
             # Mutation
             self.mutate(uav, self.mutation_rate)
 
+            uav.genotype.add_subjectives()
             uav.genotype.sort_by_distance()
 
             children.append(uav)
@@ -255,8 +256,6 @@ class NSGA3(GeneticAlgorithm, ABC):
     def crossover(parent1: UAV, parent2: UAV, crossover_rate: float):
         genes1 = parent1.genotype
         genes2 = parent2.genotype
-
-        assert len(genes1.position_genes) == len(genes2.position_genes), "Parent genes must have the same length"
 
         if random.random() <= crossover_rate:
             return genes1.crossover(genes2)

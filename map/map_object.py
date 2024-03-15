@@ -7,6 +7,7 @@ class MapObjectType(Enum):
     OBJECTIVE = 1
     OBSTACLE = 2
     UAV = 3
+    SUBOBJECTIVE = 4
 
 
 class MapObject:

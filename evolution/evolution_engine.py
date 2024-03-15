@@ -20,7 +20,7 @@ class EvolutionEngine:
         uavs = []
         for _ in range(no_uavs):
             # genotype = Genotype.generate_random(moves_length, map.width, map.height)
-            genotype = Genotype.generate_random_with_sorted_by_distance(moves_length, map.start.position, map.objective.position)
+            genotype = Genotype.generate_random_with_sorted_by_distance(moves_length, map.start.position, map.objective.position, map.subobjectives)
             uavs.append(UAV(genotype, map))
         return uavs
 
@@ -50,8 +50,8 @@ class EvolutionEngine:
         self.map.visualize(alg_name, generation_id, self.get_map_uavs())
 
     def get_map_uavs(self):
-        sorted_uav_list = sorted(self.uavs, key=lambda uav: uav.get_cost())
-        return [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in sorted_uav_list[:1]]
+        # sorted_uav_list = sorted(self.uavs, key=lambda uav: uav.get_cost())
+        return [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in self.uavs[:1]]
 
     def print_uavs(self):
         for uav in self.uavs:

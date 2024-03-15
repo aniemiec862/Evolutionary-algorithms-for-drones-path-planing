@@ -20,7 +20,11 @@ if __name__ == "__main__":
         MapObject(Point2d(120, 60), 30, MapObjectType.OBSTACLE),
     ]
 
-    map = Map(200, 200, start, objective, obstacles)
+    subobjectives = [
+        MapObject(Point2d(25, 150), 5, MapObjectType.SUBOBJECTIVE),
+    ]
+
+    map = Map(200, 200, start, objective, obstacles, subobjectives)
 
     no_uavs = 500
     no_generations = 20

@@ -24,6 +24,8 @@ class UAV:
         if self.has_already_moved is True:
             return
 
+        self.moves = [self.start.position] + self.genotype.position_genes + [self.objective.position]
+
         for move_id in range(1, len(self.moves)):
             new_position = self.moves[move_id]
             self.path_length += round(self.position.count_distance(new_position), 3)

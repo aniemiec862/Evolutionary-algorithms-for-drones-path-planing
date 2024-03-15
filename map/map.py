@@ -6,21 +6,23 @@ from map.map_object import MapObject, MapObjectType, MapUAV
 
 
 class Map:
-    def __init__(self, width: int, height: int, start: MapObject, objective: MapObject, obstacles: list[MapObject]):
+    def __init__(self, width: int, height: int, start: MapObject, objective: MapObject, obstacles: list[MapObject], subobjectives: list[MapObject]):
         self.width = width
         self.height = height
 
         self.start = start
         self.objective = objective
         self.obstacles = obstacles
-        self.points = obstacles + [start, objective]
+        self.subobjectives = subobjectives
+        self.points = obstacles + subobjectives + [start, objective]
 
     def build_plot(self, alg_name, generation_id, uavs):
         color_mapping = {
             MapObjectType.START: "green",
             MapObjectType.OBJECTIVE: "blue",
             MapObjectType.OBSTACLE: "red",
-            MapObjectType.UAV: "violet"
+            MapObjectType.UAV: "violet",
+            MapObjectType.SUBOBJECTIVE: "deepskyblue"
         }
 
         plt.figure(figsize=(8, 8))
