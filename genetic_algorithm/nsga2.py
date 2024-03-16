@@ -8,11 +8,13 @@ from map.map import Map
 from uav.genotype import Genotype
 from uav.uav import UAV
 
+
 class ObjectiveUav:
     def __init__(self, id: int, objectives, encountered_obstacles: int):
         self.id = id
         self.objectives = objectives
         self.encountered_obstacles = encountered_obstacles
+
 
 class CrowdingDistanceResult:
     def __init__(self, id: int, front_rank: int, crowding_distance_value: float):
@@ -22,13 +24,14 @@ class CrowdingDistanceResult:
 
 
 class NSGA2(GeneticAlgorithm, ABC):
-    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float, map: Map, evaluate_whole_population: bool):
+    def __init__(self, selected_objectives: [OptimizationObjective], crossover_rate: float, mutation_rate: float,
+                 map: Map, evaluate_whole_population: bool):
         super().__init__(selected_objectives, crossover_rate, mutation_rate, map)
         self.evaluate_whole_population = evaluate_whole_population
 
     def run_generation(self, uavs: [UAV]):
         crowding_distances = self.rank_uavs(uavs, True)
-        crowding_distances = crowding_distances[:int(0.3*len(crowding_distances))]
+        crowding_distances = crowding_distances[:int(0.3 * len(crowding_distances))]
 
         children = []
         while len(children) < len(uavs):
@@ -43,7 +46,8 @@ class NSGA2(GeneticAlgorithm, ABC):
 
             # Crossover
             offspring_genes = self.crossover(parent1, parent2, self.crossover_rate)
-            uav = UAV(Genotype(offspring_genes, parent1.genotype.start_position, parent1.genotype.subobjectives), self.map)
+            uav = UAV(Genotype(offspring_genes, parent1.genotype.start_position, parent1.genotype.subobjectives),
+                      self.map)
 
             # Mutation
             self.mutate(uav, self.mutation_rate)
@@ -74,7 +78,8 @@ class NSGA2(GeneticAlgorithm, ABC):
             for objective_id in range(len(self.selected_objectives)):
                 objective_values[objective_id] = self.objective_function(uav, self.selected_objectives[objective_id])
             objectives.append(objective_values)
-            objectives_uavs.append(ObjectiveUav(id, objective_values, self.objective_function(uav, OptimizationObjective.ENCOUNTERED_OBSTACLES)))
+            objectives_uavs.append(ObjectiveUav(id, objective_values, self.objective_function(uav,
+                                                                                              OptimizationObjective.ENCOUNTERED_OBSTACLES)))
 
         fronts = self.create_fronts_by_obstacles(objectives_uavs)
 
@@ -200,7 +205,8 @@ class NSGA2(GeneticAlgorithm, ABC):
         tournament_indices = random.sample(range(len(crowding_distances)), tournament_size)
 
         # Select the UAV with smaller front rank, and if equal, select the one with the smaller crowding distance
-        winner_index = min(tournament_indices, key=lambda idx: (crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
+        winner_index = min(tournament_indices, key=lambda idx: (
+        crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
         return crowding_distances[winner_index].id
 
     @staticmethod
@@ -216,3 +222,6 @@ class NSGA2(GeneticAlgorithm, ABC):
     def mutate(self, uav: UAV, mutation_rate):
         if random.random() <= mutation_rate:
             uav.genotype.mutate(self.map)
+
+    def get_name(self):
+        return "NSGA2"

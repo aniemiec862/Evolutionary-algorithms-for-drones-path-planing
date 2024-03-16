@@ -265,3 +265,6 @@ class NSGA3(GeneticAlgorithm, ABC):
     def mutate(self, uav: UAV, mutation_rate):
         if random.random() <= mutation_rate:
             uav.genotype.mutate(self.map)
+
+    def get_name(self):
+        return "NSGA3"

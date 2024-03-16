@@ -62,17 +62,17 @@ class Genotype:
 
         averaged_segment = [Point2d((i.x + j.x) / 2, (i.y + j.y) / 2) for i, j in zip(preserved_segment, preserved_segment_other)]
 
+        # offspring_genes = (
+        #     filtered_genes2[:crossover_point1]
+        #     + averaged_segment
+        #     + filtered_genes2[crossover_point2:]
+        # )
+
         offspring_genes = (
             filtered_genes2[:crossover_point1]
-            + averaged_segment
+            + filtered_genes1[crossover_point1:crossover_point2]
             + filtered_genes2[crossover_point2:]
         )
-
-        # offspring_genes = (
-        #     other.position_genes[:crossover_point1]
-        #     + self.position_genes[crossover_point1:crossover_point2]
-        #     + other.position_genes[crossover_point2:]
-        # )
         return offspring_genes
 
     def sort_by_distance(self):

@@ -17,6 +17,10 @@ class GeneticAlgorithm(ABC):
     def run_generation(self, uavs: [UAV]):
         pass
 
+    @abstractmethod
+    def get_name(self):
+        pass
+
     def objective_function(self, uav: UAV, objective: OptimizationObjective):
         if objective == OptimizationObjective.PATH_SCORE:
             return uav.get_cost()
