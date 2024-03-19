@@ -1,0 +1,32 @@
+{
+  "algorithm": "spea2",
+  "uavs": 500,
+  "moves": 10,
+  "generations": 20,
+  "width": 200,
+  "height": 200,
+  "start": {
+    "x": 20,
+    "y": 20,
+    "radius": 10
+  },
+  "objective": {
+    "x": 180,
+    "y": 180,
+    "radius": 20
+  },
+  "subobjectives": [
+    [
+      { "x": 75, "y": 125, "radius": 5 },
+      { "x": 30, "y": 175, "radius": 5 }
+    ],
+    [
+      { "x": 160, "y": 30, "radius": 5 }
+    ]
+  ],
+  "obstacles": [
+      { "x": 100, "y": 150, "radius": 20 },
+      { "x": 120, "y": 60, "radius": 30 }
+  ],
+  "visualize_all_steps": false
+}
