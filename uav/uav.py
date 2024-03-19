@@ -86,7 +86,7 @@ class UAV:
             pos3 = self.moves[move_id + 2]
             angle = Point2d.calculate_angle(pos1, pos2, pos3)
             angles.append(angle)
-        self.path_smoothness = max(angles) if angles else 0
+        self.path_smoothness = sum(map(lambda angle: 180 - angle, angles)) if angles else 0
 
     def calculate_obstacle_proximity(self):
         min_distance = min(obstacle.distance_to_point(self.position) for obstacle in self.obstacles)
