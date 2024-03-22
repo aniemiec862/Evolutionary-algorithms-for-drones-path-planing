@@ -1,0 +1,2 @@
+global uavs_collision_range
+global final_uavs

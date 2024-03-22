@@ -21,7 +21,8 @@ class GeneticAlgorithm(ABC):
     def get_name(self):
         pass
 
-    def objective_function(self, uav: UAV, objective: OptimizationObjective):
+    @staticmethod
+    def objective_function(uav: UAV, objective: OptimizationObjective):
         if objective == OptimizationObjective.PATH_SCORE:
             return uav.get_cost()
 

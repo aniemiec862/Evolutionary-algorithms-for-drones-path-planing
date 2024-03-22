@@ -206,7 +206,7 @@ class NSGA2(GeneticAlgorithm, ABC):
 
         # Select the UAV with smaller front rank, and if equal, select the one with the smaller crowding distance
         winner_index = min(tournament_indices, key=lambda idx: (
-        crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
+            crowding_distances[idx].front_rank, crowding_distances[idx].crowding_distance_value))
         return crowding_distances[winner_index].id
 
     @staticmethod

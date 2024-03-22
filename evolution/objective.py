@@ -7,4 +7,3 @@ class OptimizationObjective(Enum):
     PATH_LENGTH = 2,
     PATH_SMOOTHNESS = 3,
     OBSTACLE_PROXIMITY = 4
-

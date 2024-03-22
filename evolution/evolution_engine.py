@@ -1,12 +1,11 @@
 import string
 
 from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
-from genetic_algorithm.nsga3 import NSGA3
-from genetic_algorithm.spea2 import SPEA2
 from map.map import Map
 from map.map_object import MapUAV, MapObject
 from uav.genotype import Genotype
 from uav.uav import UAV
+from utils import constants
 
 
 class EvolutionEngine:
@@ -17,12 +16,11 @@ class EvolutionEngine:
         self.map = map
         self.max_moves_length = max_moves_length
         self.visualize_all_steps = visualize_all_steps
-        self.final_uavs = []
+        constants.final_uavs = []
 
     def init_uavs(self, subobjectives: list[MapObject]):
         uavs = []
         for _ in range(self.no_uavs):
-            # genotype = Genotype.generate_random(moves_length, map.width, map.height)
             genotype = Genotype.generate_random_with_sorted_by_distance(self.max_moves_length, self.map.start.position, self.map.objective.position, subobjectives)
             uavs.append(UAV(genotype, self.map))
         self.uavs = uavs
@@ -32,7 +30,7 @@ class EvolutionEngine:
             print("Gen: ", gen_id + 1)
             self.run_generation(gen_id, algorithm)
 
-        self.final_uavs += self.uavs[:1]
+        constants.final_uavs += self.uavs[:1]
 
         if self.visualize_all_steps is False:
             self.visualize_uavs(algorithm.get_name(), self.no_generations, False)
@@ -51,7 +49,7 @@ class EvolutionEngine:
 
     def visualize_uavs(self, algorithm_name: string, generation_id: int, is_final_result: bool):
         if is_final_result:
-            uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in self.final_uavs]
+            uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in constants.final_uavs]
         else:
             uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in self.uavs[:1]]
         self.map.visualize(algorithm_name, generation_id, uavs)

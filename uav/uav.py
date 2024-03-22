@@ -2,7 +2,7 @@ from utils.Point2d import Point2d
 from map.map import Map
 from uav.genotype import Genotype
 import math
-
+from utils import constants
 
 class UAV:
     def __init__(self, genotype: Genotype, map: Map):
@@ -52,6 +52,12 @@ class UAV:
             if obstacle.is_point_inside(position) \
                     or obstacle.does_move_intercourse_obstacle(self.position, position):
                 return False
+
+        for uav in constants.final_uavs:
+            for point in uav.genotype.position_genes:
+                if point is not self.start and point is not self.objective and point not in uav.genotype.subobjectives and position.count_distance(point) < constants.uavs_collision_range:
+                    return False
+
         return True
 
     def calculate_traveled_distance(self):
