@@ -3,6 +3,7 @@ from map.map import Map
 from uav.genotype import Genotype
 import math
 from utils import constants
+from utils.Point3d import Point3d
 
 class UAV:
     def __init__(self, genotype: Genotype, map: Map):
@@ -18,6 +19,7 @@ class UAV:
         self.path_length = 0
         self.path_smoothness = 0
         self.cost = 0
+        self.optimal_height_deviation = 0
         self.has_already_moved = False
 
     def move(self):
@@ -29,6 +31,7 @@ class UAV:
         for move_id in range(1, len(self.moves)):
             new_position = self.moves[move_id]
             self.path_length += round(self.position.count_distance(new_position), 3)
+            self.optimal_height_deviation += abs(new_position.z - constants.height_to_maintain)
             if not self.validate_can_move_to_position(new_position):
                 self.intersection_moves += 1
             self.calculate_obstacle_proximity()
@@ -41,10 +44,11 @@ class UAV:
     def get_moves(self):
         return self.moves
 
-    def validate_can_move_to_position(self, position: Point2d):
-        if position.x <= 0 or position.x >= self.map.width or position.y <= 0 or position.y >= self.map.height:
+    def validate_can_move_to_position(self, position: Point3d):
+        if Point3d.is_position_between_valid_range(position) is False:
             return False
 
+        # TODO check if we want to move only in z axis
         if position.x == self.position.x and position.y == self.position.y:
             return True
 
@@ -90,6 +94,7 @@ class UAV:
             pos1 = self.moves[move_id]
             pos2 = self.moves[move_id + 1]
             pos3 = self.moves[move_id + 2]
+            #TODO calculate in 3d
             angle = Point2d.calculate_angle(pos1, pos2, pos3)
             angles.append(angle)
         self.path_smoothness = sum(map(lambda angle: 180 - angle, angles)) if angles else 0

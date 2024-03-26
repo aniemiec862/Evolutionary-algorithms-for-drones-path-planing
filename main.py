@@ -5,32 +5,37 @@ from genetic_algorithm.nsga3 import NSGA3
 from genetic_algorithm.spea2 import SPEA2
 from map.map import Map
 from map.map_object import MapObject, MapObjectType
-from utils.Point2d import Point2d
 from utils import constants
 
 import json
+
+from utils.Point3d import Point3d
 
 if __name__ == "__main__":
     with open('config.json') as f:
         config = json.load(f)
 
-    start = MapObject(Point2d(config["start"]["x"], config["start"]["y"]), config["start"]["radius"], MapObjectType.START)
-    objective = MapObject(Point2d(config["objective"]["x"], config["objective"]["y"]), config["objective"]["radius"], MapObjectType.OBJECTIVE)
+    start = MapObject(Point3d(config["start"]["x"], config["start"]["y"], config["start"]["z"]), config["start"]["radius"], MapObjectType.START)
+    objective = MapObject(Point3d(config["objective"]["x"], config["objective"]["y"], config["objective"]["z"]), config["objective"]["radius"], MapObjectType.OBJECTIVE)
 
-    obstacles = [MapObject(Point2d(obstacle["x"], obstacle["y"]), obstacle["radius"], MapObjectType.OBSTACLE) for obstacle in config["obstacles"]]
+    obstacles = [MapObject(Point3d(obstacle["x"], obstacle["y"], obstacle["z"]), obstacle["radius"], MapObjectType.OBSTACLE) for obstacle in config["obstacles"]]
 
-    subobjectives = [[MapObject(Point2d(subobjective["x"], subobjective["y"]), subobjective["radius"], MapObjectType.SUBOBJECTIVE) for subobjective in sublist] for sublist in config["subobjectives"]]
+    subobjectives = [[MapObject(Point3d(subobjective["x"], subobjective["y"], subobjective["z"]), subobjective["radius"], MapObjectType.SUBOBJECTIVE) for subobjective in sublist] for sublist in config["subobjectives"]]
 
-    map = Map(config["width"], config["height"], start, objective, obstacles, [j for i in subobjectives for j in i])
+    map = Map(config["max_width"], config["max_depth"], start, objective, obstacles, [j for i in subobjectives for j in i])
 
     no_uavs = config["uavs"]
     no_generations = config["generations"]
     max_moves_length = config["moves"]
     visualize_all_steps = config["visualize_all_steps"]
     constants.uavs_collision_range = config["uavs_collision_range"]
+    constants.max_width = config["max_width"]
+    constants.max_depth = config["max_depth"]
+    constants.max_height = config["max_height"]
+    constants.height_to_maintain = config["height_to_maintain"]
 
     # objectives = [OptimizationObjective.PATH_SCORE]
-    objectives = [OptimizationObjective.OBSTACLE_PROXIMITY,
+    objectives = [OptimizationObjective.OBSTACLE_PROXIMITY, OptimizationObjective.OPTIMAL_FLIGHT_HEIGHT,
                   OptimizationObjective.PATH_LENGTH, OptimizationObjective.PATH_SMOOTHNESS]
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 

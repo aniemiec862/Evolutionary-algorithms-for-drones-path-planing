@@ -2,23 +2,24 @@ import random
 
 from map.map import Map
 from map.map_object import MapObject
-from utils.Point2d import Point2d
+from utils import constants
+from utils.Point3d import Point3d
 
 
 class Genotype:
-    def __init__(self, position_genes: [Point2d], start_position: Point2d, subobjectives: [Point2d]):
+    def __init__(self, position_genes: [Point3d], start_position: Point3d, subobjectives: [Point3d]):
         self.position_genes = position_genes
         self.start_position = start_position
         self.subobjectives = subobjectives
 
     @classmethod
-    def generate_random(cls, num_moves: int, max_x: int, max_y: int, subobjectives: list[Point2d]):
-        position_genes = [Point2d(random.randint(0, max_x), random.randint(0, max_y)) for _ in range(num_moves)]
-        return cls(position_genes, Point2d(0, 0), subobjectives)
+    def generate_random(cls, num_moves: int, subobjectives: list[Point3d]):
+        position_genes = [Point3d(random.randint(0, constants.max_width), random.randint(0, constants.max_depth), random.randint(0, constants.max_height)) for _ in range(num_moves)]
+        return cls(position_genes, Point3d(0, 0, 0), subobjectives)
 
     @classmethod
-    def generate_random_with_sorted_by_distance(cls, num_moves: int, start: Point2d, finish: Point2d, subobjectives: list[MapObject]):
-        position_genes = [Point2d(random.randint(0, int(finish.x)), random.randint(0, int(finish.y))) for _ in range(num_moves - len(subobjectives))]
+    def generate_random_with_sorted_by_distance(cls, num_moves: int, start: Point3d, finish: Point3d, subobjectives: list[MapObject]):
+        position_genes = [Point3d(random.randint(0, int(finish.x)), random.randint(0, int(finish.y)), random.randint(0, constants.max_height)) for _ in range(num_moves - len(subobjectives))]
         subobjectives_points = []
         for subobjective in subobjectives:
             subobjectives_points.append(subobjective.position)
@@ -27,12 +28,12 @@ class Genotype:
         return cls(position_genes, start, subobjectives_points)
 
     @classmethod
-    def generate_straight(cls, num_moves: int, start: Point2d, finish: Point2d, subobjectives: list[Point2d]):
+    def generate_straight(cls, num_moves: int, start: Point3d, finish: Point3d, subobjectives: list[Point3d]):
         step_x = (finish.x - start.x) / num_moves
         step_y = (finish.y - start.y) / num_moves
 
         # Generate position genes for the straight line (excluding start and finish points)
-        position_genes = [Point2d(start.x + i * step_x, start.y + i * step_y) for i in range(1, num_moves)]
+        position_genes = [Point3d(start.x + i * step_x, start.y + i * step_y, 0) for i in range(1, num_moves)]
 
         return cls(position_genes, start, subobjectives)
 
@@ -43,7 +44,8 @@ class Genotype:
         for index in mutate_index:
             new_position = None
             while new_position is None:
-                new_position = Point2d(random.randint(0, map.width), random.randint(0, map.height))
+                # TODO change max x/y to objective values
+                new_position = Point3d(random.randint(0, constants.max_width), random.randint(0, constants.max_depth), random.randint(0, constants.max_height))
                 for obstacle in map.obstacles:
                     if obstacle.is_point_inside(new_position):
                         new_position = None
@@ -60,7 +62,7 @@ class Genotype:
         preserved_segment = filtered_genes1[crossover_point1:crossover_point2]
         preserved_segment_other = filtered_genes2[crossover_point1:crossover_point2]
 
-        averaged_segment = [Point2d((i.x + j.x) / 2, (i.y + j.y) / 2) for i, j in zip(preserved_segment, preserved_segment_other)]
+        # averaged_segment = [Point2d((i.x + j.x) / 2, (i.y + j.y) / 2) for i, j in zip(preserved_segment, preserved_segment_other)]
 
         # offspring_genes = (
         #     filtered_genes2[:crossover_point1]
@@ -79,7 +81,7 @@ class Genotype:
         self.position_genes = sorted(self.position_genes, key=lambda point: self.start_position.count_distance(point))
 
     @staticmethod
-    def filter_subobjectives(genes: [Point2d], subjectives: [Point2d]):
+    def filter_subobjectives(genes: [Point3d], subjectives: [Point3d]):
         return list(filter(lambda point: point not in subjectives, genes))
 
     def add_subjectives(self):

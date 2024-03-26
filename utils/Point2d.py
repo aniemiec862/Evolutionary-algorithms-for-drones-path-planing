@@ -55,10 +55,6 @@ class Point2d:
             return sqrt(Point2d.hypot2(external_point, D))
 
     @staticmethod
-    def generate_single_position(max_x: int, max_y: int):
-        return Point2d(random.randint(0, max_x), random.randint(0, max_y))
-
-    @staticmethod
     def calculate_angle(pos1, pos2, pos3):
         # Calculate the angle between three positions
         vector1 = np.array([pos1.x - pos2.x, pos1.y - pos2.y])
