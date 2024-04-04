@@ -1,20 +1,42 @@
 import matplotlib.pyplot as plt
 import pygame
+import numpy as np
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from map.map_object import MapObject, MapObjectType, MapUAV
 
 
 class Map:
-    def __init__(self, width: int, height: int, start: MapObject, objective: MapObject, obstacles: list[MapObject], subobjectives: list[MapObject]):
+    def __init__(self, width: int, depth: int, height: int, start: MapObject, objective: MapObject, obstacles: list[MapObject], subobjectives: list[MapObject]):
         self.width = width
+        self.depth = depth
         self.height = height
 
         self.start = start
         self.objective = objective
         self.obstacles = obstacles
         self.subobjectives = subobjectives
-        self.points = obstacles + subobjectives + [start, objective]
+        self.objects = obstacles + subobjectives + [start, objective]
+
+    @staticmethod
+    def data_for_cylinder_along_z(center_x, center_y, height_z, radius):
+        z = np.linspace(0, height_z, 50)
+        theta = np.linspace(0, 2 * np.pi, 50)
+        theta_grid, z_grid = np.meshgrid(theta, z)
+        x_grid = radius * np.cos(theta_grid) + center_x
+        y_grid = radius * np.sin(theta_grid) + center_y
+        return x_grid, y_grid, z_grid
+
+    @staticmethod
+    def data_for_cylinder_top_base(center_x, center_y, height_z, radius):
+        R = np.linspace(0, radius, 50)
+        h = height_z
+        u = np.linspace(0, 2 * np.pi, 50)
+
+        x = np.outer(R, np.cos(u)) + center_x
+        y = np.outer(R, np.sin(u)) + center_y
+        z = np.ones_like(x) * h
+        return x, y, z
 
     def build_plot(self, alg_name, generation_id, uavs):
         color_mapping = {
@@ -25,29 +47,35 @@ class Map:
             MapObjectType.SUBOBJECTIVE: "deepskyblue"
         }
 
-        plt.figure(figsize=(8, 8))
-        ax = plt.gca()
+        fig = plt.figure(figsize=(8, 8))
+        ax = fig.add_subplot(111, projection='3d')
 
-        for point in self.points:
-            color = color_mapping[point.get_type()]
-            x, y = point.position.x, point.position.y
-            circle = plt.Circle((x, y), point.radius, color=color, fill=True, alpha=0.8)
-            ax.add_artist(circle)
+        for object in self.objects:
+            color = color_mapping[object.get_type()]
+            x, y, z = Map.data_for_cylinder_along_z(object.position.x, object.position.y, object.position.z, object.radius)
+            ax.plot_surface(x, y, z, alpha=0.5, color=color)
+
+            x, y, z = Map.data_for_cylinder_top_base(object.position.x, object.position.y, object.position.z, object.radius)
+            ax.plot_surface(x, y, z, alpha=0.5, color=color)
 
         for uav in uavs:
             moves = uav.moves
             if moves:
-                x, y = zip(*[(move.x, move.y) for move in moves])
-                ax.plot(x, y, marker='o', linestyle='-', markersize=5, linewidth=3.0,
+                x, y, z = zip(*[(move.x, move.y, move.z) for move in moves])
+                ax.plot(x, y, z, marker='o', linestyle='-', markersize=5, linewidth=3.0,
                         label='UAV Path', color=color_mapping[MapObjectType.UAV])
-                ax.text(x[-1], y[-1], f"Traveled: {int(uav.distance)}m", fontsize=10, color='black', ha='left',
+                ax.text(x[-1], y[-1], z[-1], f"Traveled: {int(uav.distance)}m", fontsize=10, color='black', ha='left',
                         va='bottom')
 
-        ax.set_xlim(0, self.width)
-        ax.set_ylim(0, self.height)
+                ax.set_xlim(0, self.width)
+                ax.set_ylim(0, self.depth)
+                ax.set_zlim(0, self.height)
 
-        ax.grid(True, which='both', linestyle='--', linewidth=1.0)
-        ax.set_title(f'{alg_name}: generation {generation_id}')
+                ax.set_xlabel('X Label')
+                ax.set_ylabel('Y Label')
+                ax.set_zlabel('Z Label')
+
+                ax.set_title(f'{alg_name}: generation {generation_id}')
 
         return plt
 

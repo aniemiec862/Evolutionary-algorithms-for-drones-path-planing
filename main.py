@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     subobjectives = [[MapObject(Point3d(subobjective["x"], subobjective["y"], subobjective["z"]), subobjective["radius"], MapObjectType.SUBOBJECTIVE) for subobjective in sublist] for sublist in config["subobjectives"]]
 
-    map = Map(config["max_width"], config["max_depth"], start, objective, obstacles, [j for i in subobjectives for j in i])
+    map = Map(config["max_width"], config["max_depth"], config["max_height"], start, objective, obstacles, [j for i in subobjectives for j in i])
 
     no_uavs = config["uavs"]
     no_generations = config["generations"]
