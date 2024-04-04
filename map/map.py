@@ -64,8 +64,6 @@ class Map:
                 x, y, z = zip(*[(move.x, move.y, move.z) for move in moves])
                 ax.plot(x, y, z, marker='o', linestyle='-', markersize=5, linewidth=3.0,
                         label='UAV Path', color=color_mapping[MapObjectType.UAV])
-                ax.text(x[-1], y[-1], z[-1], f"Traveled: {int(uav.distance)}m", fontsize=10, color='black', ha='left',
-                        va='bottom')
 
                 ax.set_xlim(0, self.width)
                 ax.set_ylim(0, self.depth)

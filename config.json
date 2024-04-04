@@ -1,11 +1,11 @@
 {
-  "algorithm": "nsga2",
-  "uavs": 500,
+  "algorithm": "nsga3",
+  "uavs": 1000,
   "moves": 10,
   "generations": 50,
   "max_width": 200,
   "max_depth": 200,
-  "max_height": 50,
+  "max_height": 20,
   "uavs_collision_range": 20,
   "height_to_maintain": 5,
   "start": {
