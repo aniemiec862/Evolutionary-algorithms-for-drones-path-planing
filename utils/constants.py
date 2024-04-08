@@ -5,3 +5,4 @@ global max_depth
 global max_height
 global height_to_maintain
 global fuel_consumption
+global no_uavs

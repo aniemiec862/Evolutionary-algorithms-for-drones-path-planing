@@ -1,7 +1,7 @@
 {
   "algorithm": "nsga2",
   "uavs": 500,
-  "moves": 10,
+  "moves": 7,
   "generations": 100,
   "crossover_rate": 0.9,
   "mutation_rate": 0.05,

@@ -25,6 +25,7 @@ if __name__ == "__main__":
     map = Map(config["max_width"], config["max_depth"], config["max_height"], start, objective, obstacles, [j for i in subobjectives for j in i])
 
     no_uavs = config["uavs"]
+    constants.no_uavs = no_uavs
     no_generations = config["generations"]
     max_moves_length = config["moves"]
     visualize_all_steps = config["visualize_all_steps"]
