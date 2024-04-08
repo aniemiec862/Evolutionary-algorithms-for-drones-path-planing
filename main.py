@@ -33,9 +33,21 @@ if __name__ == "__main__":
     constants.max_depth = config["max_depth"]
     constants.max_height = config["max_height"]
     constants.height_to_maintain = config["height_to_maintain"]
+    constants.fuel_consumption = config["fuel_consumption_per_meter"]
+    mutation_rate = config["mutation_rate"]
+    crossover_rate = config["crossover_rate"]
 
     # objectives = [OptimizationObjective.PATH_SCORE]
-    objectives = [OptimizationObjective.OBSTACLE_PROXIMITY, OptimizationObjective.OPTIMAL_FLIGHT_HEIGHT,
+    # objectives = [
+    #     OptimizationObjective.OBSTACLE_PROXIMITY,
+    #     OptimizationObjective.OPTIMAL_FLIGHT_HEIGHT,
+    #     OptimizationObjective.FUEL_CONSUMPTION,
+    #     OptimizationObjective.PATH_LENGTH,
+    #     OptimizationObjective.PATH_SMOOTHNESS,
+    #     OptimizationObjective.HEIGHT_DIFFERENCE
+    #               ]
+
+    objectives = [OptimizationObjective.OBSTACLE_PROXIMITY, OptimizationObjective.OPTIMAL_HEIGHT_DEVIATION,
                   OptimizationObjective.PATH_LENGTH, OptimizationObjective.PATH_SMOOTHNESS]
     evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
@@ -44,11 +56,11 @@ if __name__ == "__main__":
         evolution.init_uavs(subobjectives_list)
 
         if config["algorithm"] == "nsga2":
-            alg = NSGA2(objectives, 0.9, 0.05, map, True)
+            alg = NSGA2(objectives, crossover_rate, mutation_rate, map, True)
         elif config["algorithm"] == "nsga3":
-            alg = NSGA3(objectives, 0.9, 0.05, map, True)
+            alg = NSGA3(objectives, crossover_rate, mutation_rate, map, True)
         elif config["algorithm"] == "spea2":
-            alg = SPEA2(objectives, 0.9, 0.05, map, evolution.uavs, int(0.3*no_uavs))
+            alg = SPEA2(objectives, crossover_rate, mutation_rate, map, evolution.uavs, int(0.3*no_uavs))
 
         evolution.run(alg)
 

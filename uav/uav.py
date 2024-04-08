@@ -1,8 +1,8 @@
-from utils.Point2d import Point2d
 from map.map import Map
 from uav.genotype import Genotype
 import math
 from utils import constants
+from utils.Point2d import Point2d
 from utils.Point3d import Point3d
 
 class UAV:
@@ -20,6 +20,9 @@ class UAV:
         self.path_smoothness = 0
         self.cost = 0
         self.optimal_height_deviation = 0
+        self.vertical_moves_length = 0
+        self.avg_height = 0
+        self.used_fuel = 0
         self.has_already_moved = False
 
     def move(self):
@@ -28,14 +31,21 @@ class UAV:
 
         self.moves = [self.start.position] + self.genotype.position_genes + [self.objective.position]
 
+        height_sum = 0
+
         for move_id in range(1, len(self.moves)):
             new_position = self.moves[move_id]
             self.path_length += round(self.position.count_distance(new_position), 3)
             self.optimal_height_deviation += abs(new_position.z - constants.height_to_maintain)
+            self.vertical_moves_length += abs(self.position.z - new_position.z)
+            height_sum += new_position.z
             if not self.validate_can_move_to_position(new_position):
                 self.intersection_moves += 1
             self.calculate_obstacle_proximity()
             self.position = new_position
+
+        self.avg_height = height_sum / (len(self.moves) - 1)
+        self.used_fuel = (self.path_length + height_sum * 3) * constants.fuel_consumption
 
         self.calculate_path_smoothness()
         self.calculate_cost()

@@ -1,10 +1,7 @@
-import random
 from math import sqrt
 import numpy as np
 
 from utils import constants
-from utils.Point2d import Point2d
-
 
 class Point3d:
     def __init__(self, x: float, y: float, z: float):
@@ -28,8 +25,8 @@ class Point3d:
     @staticmethod
     def calculate_angle(pos1, pos2, pos3):
         # Calculate the angle between three positions
-        vector1 = np.array([pos1.x - pos2.x, pos1.y - pos2.y])
-        vector2 = np.array([pos3.x - pos2.x, pos3.y - pos2.y])
+        vector1 = np.array([pos1.x - pos2.x, pos1.y - pos2.y, pos1.z - pos2.z])
+        vector2 = np.array([pos3.x - pos2.x, pos3.y - pos2.y, pos3.z - pos2.z])
 
         dot_product = np.dot(vector1, vector2)
         norm_product = np.linalg.norm(vector1) * np.linalg.norm(vector2)

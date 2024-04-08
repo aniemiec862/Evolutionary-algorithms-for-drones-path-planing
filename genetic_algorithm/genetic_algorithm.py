@@ -39,4 +39,13 @@ class GeneticAlgorithm(ABC):
             return uav.obstacle_proximity
 
         if objective == OptimizationObjective.OPTIMAL_FLIGHT_HEIGHT:
+            return uav.avg_height
+
+        if objective == OptimizationObjective.HEIGHT_DIFFERENCE:
+            return uav.vertical_moves_length
+
+        if objective == OptimizationObjective.FUEL_CONSUMPTION:
+            return uav.used_fuel
+
+        if objective == OptimizationObjective.OPTIMAL_HEIGHT_DEVIATION:
             return uav.optimal_height_deviation
