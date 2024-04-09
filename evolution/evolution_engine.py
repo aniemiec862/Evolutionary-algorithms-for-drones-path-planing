@@ -30,7 +30,7 @@ class EvolutionEngine:
             print("Gen: ", gen_id + 1)
             self.run_generation(gen_id, algorithm)
 
-        constants.final_uavs += self.uavs[:1]
+        constants.final_uavs += self.uavs[:constants.final_uavs_per_path]
 
         if self.visualize_all_steps is False:
             self.visualize_uavs(algorithm.get_name(), self.no_generations, False)
@@ -51,7 +51,7 @@ class EvolutionEngine:
         if is_final_result:
             uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in constants.final_uavs]
         else:
-            uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in self.uavs[:1]]
+            uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in self.uavs[:constants.final_uavs_per_path]]
         self.map.visualize(algorithm_name, generation_id, uavs)
 
     def print_uavs(self):

@@ -70,16 +70,16 @@ class Map:
                 ax.set_ylim(0, self.depth)
                 ax.set_zlim(0, self.height)
 
-                ax.set_xlabel('X Label')
-                ax.set_ylabel('Y Label')
-                ax.set_zlabel('Z Label')
+                ax.set_xlabel('width [m]')
+                ax.set_ylabel('depth [m]')
+                ax.set_zlabel('height [m]')
 
                 ax.set_title(f'{alg_name}: generation {generation_id}')
 
         additional_parameters = {
             "Number of uavs": constants.no_uavs,
             "Number of moves": len(uavs[0].moves),
-            "Path length": uavs[0].distance
+            "Path length [m]": uavs[0].distance
         }
 
         vertical_position = 1.05 - len(additional_parameters) * 0.03

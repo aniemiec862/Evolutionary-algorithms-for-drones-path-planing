@@ -37,6 +37,7 @@ if __name__ == "__main__":
     constants.fuel_consumption = config["fuel_consumption_per_meter"]
     mutation_rate = config["mutation_rate"]
     crossover_rate = config["crossover_rate"]
+    constants.final_uavs_per_path = config["final_uavs_per_path"]
 
     # objectives = [OptimizationObjective.PATH_SCORE]
     # objectives = [
