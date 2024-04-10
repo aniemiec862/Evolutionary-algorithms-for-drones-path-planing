@@ -54,10 +54,10 @@ class Map:
         for object in self.objects:
             color = color_mapping[object.get_type()]
             x, y, z = Map.data_for_cylinder_along_z(object.position.x, object.position.y, object.position.z, object.radius)
-            ax.plot_surface(x, y, z, alpha=1, color=color)
+            ax.plot_surface(x, y, z, alpha=0.3, color=color)
 
             x, y, z = Map.data_for_cylinder_top_base(object.position.x, object.position.y, object.position.z, object.radius)
-            ax.plot_surface(x, y, z, alpha=1, color=color)
+            ax.plot_surface(x, y, z, alpha=0.3, color=color)
 
         for uav in uavs:
             moves = uav.moves
