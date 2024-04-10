@@ -104,8 +104,7 @@ class UAV:
             pos1 = self.moves[move_id]
             pos2 = self.moves[move_id + 1]
             pos3 = self.moves[move_id + 2]
-            #TODO calculate in 3d
-            angle = Point2d.calculate_angle(pos1, pos2, pos3)
+            angle = Point3d.calculate_angle(pos1, pos2, pos3)
             angles.append(angle)
         self.path_smoothness = sum(map(lambda angle: 180 - angle, angles)) if angles else 0
 
