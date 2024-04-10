@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     map = Map(config["width"], config["height"], start, objective, obstacles, [j for i in subobjectives for j in i])
 
-    no_uavs = config["uavs"]
+    constants.no_uavs = config["uavs"]
     no_generations = config["generations"]
     max_moves_length = config["moves"]
     visualize_all_steps = config["visualize_all_steps"]
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # objectives = [OptimizationObjective.PATH_SCORE]
     objectives = [OptimizationObjective.OBSTACLE_PROXIMITY,
                   OptimizationObjective.PATH_LENGTH, OptimizationObjective.PATH_SMOOTHNESS]
-    evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
+    evolution = EvolutionEngine(constants.no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
 
     alg = None
     for subobjectives_list in subobjectives:
@@ -43,7 +43,7 @@ if __name__ == "__main__":
         elif config["algorithm"] == "nsga3":
             alg = NSGA3(objectives, 0.9, 0.05, map, True)
         elif config["algorithm"] == "spea2":
-            alg = SPEA2(objectives, 0.9, 0.05, map, evolution.uavs, int(0.3*no_uavs))
+            alg = SPEA2(objectives, 0.9, 0.05, map, evolution.uavs, int(0.3*constants.no_uavs))
 
         evolution.run(alg)
 

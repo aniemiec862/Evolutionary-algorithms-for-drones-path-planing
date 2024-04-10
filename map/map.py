@@ -3,6 +3,7 @@ import pygame
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from map.map_object import MapObject, MapObjectType, MapUAV
+from utils import constants
 
 
 class Map:
@@ -40,14 +41,12 @@ class Map:
                 x, y = zip(*[(move.x, move.y) for move in moves])
                 ax.plot(x, y, marker='o', linestyle='-', markersize=5, linewidth=3.0,
                         label='UAV Path', color=color_mapping[MapObjectType.UAV])
-                ax.text(x[-1], y[-1], f"Traveled: {int(uav.distance)}m", fontsize=10, color='black', ha='left',
-                        va='bottom')
 
         ax.set_xlim(0, self.width)
         ax.set_ylim(0, self.height)
 
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)
-        ax.set_title(f'{alg_name}: generation {generation_id}')
+        ax.set_title(f'{alg_name}: generation {generation_id}, UAVS {constants.no_uavs}')
 
         return plt
 
