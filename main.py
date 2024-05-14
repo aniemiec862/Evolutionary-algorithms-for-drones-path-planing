@@ -32,19 +32,20 @@ if __name__ == "__main__":
     # objectives = [OptimizationObjective.PATH_SCORE]
     objectives = [OptimizationObjective.OBSTACLE_PROXIMITY,
                   OptimizationObjective.PATH_LENGTH, OptimizationObjective.PATH_SMOOTHNESS]
-    evolution = EvolutionEngine(constants.no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
+    evolution = EvolutionEngine(constants.no_uavs, no_generations, map, max_moves_length, visualize_all_steps, objectives)
 
     alg = None
     for subobjectives_list in subobjectives:
         evolution.init_uavs(subobjectives_list)
 
         if config["algorithm"] == "nsga2":
-            alg = NSGA2(objectives, 0.9, 0.05, map, True)
+            alg = NSGA2(objectives, 0.9, 1/constants.no_uavs, map, True)
         elif config["algorithm"] == "nsga3":
-            alg = NSGA3(objectives, 0.9, 0.05, map, True)
+            alg = NSGA3(objectives, 0.9, 1/constants.no_uavs, map, True)
         elif config["algorithm"] == "spea2":
-            alg = SPEA2(objectives, 0.9, 0.05, map, evolution.uavs, int(0.3*constants.no_uavs))
+            alg = SPEA2(objectives, 0.9, 1/constants.no_uavs, map, evolution.uavs, int(0.3*constants.no_uavs))
 
         evolution.run(alg)
 
+    evolution.save_results(config["algorithm"] + '.csv', objectives)
     evolution.visualize_uavs(alg.get_name(), no_generations, True)

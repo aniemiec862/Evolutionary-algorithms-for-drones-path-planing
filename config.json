@@ -1,8 +1,8 @@
 {
   "algorithm": "nsga3",
-  "uavs": 500,
+  "uavs": 1000,
   "moves": 7,
-  "generations": 20,
+  "generations": 50,
   "width": 200,
   "height": 200,
   "uavs_collision_range": 20,
