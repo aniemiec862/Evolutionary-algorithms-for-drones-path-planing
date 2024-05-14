@@ -1,7 +1,7 @@
 {
   "algorithm": "nsga3",
   "uavs": 1000,
-  "moves": 7,
+  "moves": 8,
   "generations": 50,
   "width": 200,
   "height": 200,
@@ -33,7 +33,10 @@
       { "x": 50, "y": 75, "radius": 15 },
       { "x": 150, "y": 125, "radius": 10 },
       { "x": 130, "y": 90, "radius": 10 },
-      { "x": 120, "y": 60, "radius": 30 }
+      { "x": 120, "y": 60, "radius": 30 },
+      { "x": 190, "y": 75, "radius": 10 },
+      { "x": 140, "y": 180, "radius": 8 },
+      { "x": 40, "y": 130, "radius": 15 }
   ],
   "visualize_all_steps": false
 }
