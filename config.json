@@ -1,38 +1,39 @@
 {
-  "algorithm": "nsga2",
-  "uavs": 500,
+  "algorithm": "spea2",
+  "uavs": 200,
   "moves": 7,
-  "generations": 100,
+  "generations": 20,
   "crossover_rate": 0.9,
   "mutation_rate": 0.05,
   "final_uavs_per_path": 1,
-  "max_width": 200,
-  "max_depth": 200,
-  "max_height": 15,
-  "uavs_collision_range": 20,
-  "height_to_maintain": 5,
+  "max_width": 100,
+  "max_depth": 100,
+  "max_height": 10,
+  "uavs_collision_range": 5,
+  "height_to_maintain": 2,
   "fuel_consumption_per_meter": 1,
   "start": {
-    "x": 20,
-    "y": 20,
+    "x": 10,
+    "y": 10,
+    "z": 0,
+    "radius": 5
+  },
+  "objective": {
+    "x": 90,
+    "y": 90,
     "z": 0,
     "radius": 10
   },
-  "objective": {
-    "x": 180,
-    "y": 180,
-    "z": 0,
-    "radius": 20
-  },
   "subobjectives": [
     [
-      { "x": 75, "y": 125, "z": 5, "radius": 5 },
-      { "x": 30, "y": 175, "z": 5, "radius": 5 }
+      { "x": 20, "y": 43, "z": 2, "radius": 3 },
+      { "x": 15, "y": 87, "z": 1, "radius": 3 }
     ]
   ],
   "obstacles": [
-      { "x": 100, "y": 150, "z": 10, "radius": 20 },
-      { "x": 120, "y": 60, "z": 10, "radius": 30 }
+      { "x": 50, "y": 75, "z": 10, "radius": 10 },
+      { "x": 60, "y": 30, "z": 5, "radius": 15 },
+      { "x": 15, "y": 40, "z": 1, "radius": 15 }
   ],
   "visualize_all_steps": false
 }

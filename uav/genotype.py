@@ -38,7 +38,7 @@ class Genotype:
         return cls(position_genes, start, subobjectives)
 
     def mutate(self, map: Map):
-        # consider mutating smaller number of genes
+        # TODO consider mutating smaller number of genes
         mutate_num = random.randint(0, len(self.position_genes) - 1)
         mutate_index = [random.randint(0, len(self.position_genes) - 1) for _ in range(mutate_num)]
         for index in mutate_index:

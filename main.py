@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     objectives = [OptimizationObjective.OBSTACLE_PROXIMITY, OptimizationObjective.OPTIMAL_HEIGHT_DEVIATION,
                   OptimizationObjective.PATH_LENGTH, OptimizationObjective.PATH_SMOOTHNESS]
-    evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps)
+    evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps, objectives)
 
     alg = None
     for subobjectives_list in subobjectives:
@@ -66,4 +66,5 @@ if __name__ == "__main__":
 
         evolution.run(alg)
 
+    evolution.save_results(config["algorithm"] + '.csv', objectives)
     evolution.visualize_uavs(alg.get_name(), no_generations, True)
