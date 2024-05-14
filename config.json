@@ -18,15 +18,14 @@
   },
   "subobjectives": [
     [
-      { "x": 75, "y": 125, "radius": 5 },
       { "x": 30, "y": 175, "radius": 5 }
     ],
     [
-      { "x": 75, "y": 125, "radius": 5 },
       { "x": 160, "y": 30, "radius": 5 }
     ],
     [
-      { "x": 125, "y": 125, "radius": 5 }
+      { "x": 125, "y": 125, "radius": 5 },
+      { "x": 95, "y": 110, "radius": 5 }
     ]
   ],
   "obstacles": [

@@ -74,4 +74,4 @@ class EvolutionEngine:
             for count, objective in enumerate(objectives):
                 self.results.objectives_values[count].append(GeneticAlgorithm.objective_function(uav, objective))
 
-        self.results.save_to_file(file_name, False)
+        self.results.save_to_file(file_name, True)
