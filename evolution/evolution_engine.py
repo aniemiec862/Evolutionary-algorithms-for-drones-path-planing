@@ -40,8 +40,8 @@ class EvolutionEngine:
         self.results.population_size.append(self.no_uavs)
         constants.final_uavs += self.uavs[:constants.final_uavs_per_path]
 
-        if self.visualize_all_steps is False:
-            self.visualize_uavs(algorithm.get_name(), self.no_generations, False)
+        # if self.visualize_all_steps is False:
+        #     self.visualize_uavs(algorithm.get_name(), self.no_generations, False)
 
     def run_generation(self, gen_id, algorithm: GeneticAlgorithm):
         for uav in self.uavs:
@@ -72,4 +72,4 @@ class EvolutionEngine:
             for count, objective in enumerate(objectives):
                 self.results.objectives_values[count].append(GeneticAlgorithm.objective_function(uav, objective))
 
-        self.results.save_to_file(file_name)
+        self.results.save_to_file(file_name, True)

@@ -11,6 +11,23 @@ import json
 
 from utils.Point3d import Point3d
 
+def run_evolution(evolution, algorithm, map, objectives, subobjectives, no_uavs):
+    alg = None
+    for subobjectives_list in subobjectives:
+        evolution.init_uavs(subobjectives_list)
+
+        if algorithm == "nsga2":
+            alg = NSGA2(objectives, 0.9, 1 / no_uavs, map, True)
+        elif algorithm == "nsga3":
+            alg = NSGA3(objectives, 0.9, 1 / no_uavs, map, True)
+        elif algorithm == "spea2":
+            alg = SPEA2(objectives, 0.9, 1 / no_uavs, map, evolution.uavs, int(0.3 * no_uavs))
+
+        evolution.run(alg)
+
+    evolution.save_results('3d_test.csv', objectives)
+    # evolution.visualize_uavs(alg.get_name(), no_generations, True)
+
 if __name__ == "__main__":
     with open('config.json') as f:
         config = json.load(f)
@@ -40,31 +57,23 @@ if __name__ == "__main__":
     constants.final_uavs_per_path = config["final_uavs_per_path"]
 
     # objectives = [OptimizationObjective.PATH_SCORE]
-    # objectives = [
-    #     OptimizationObjective.OBSTACLE_PROXIMITY,
-    #     OptimizationObjective.OPTIMAL_FLIGHT_HEIGHT,
-    #     OptimizationObjective.FUEL_CONSUMPTION,
-    #     OptimizationObjective.PATH_LENGTH,
-    #     OptimizationObjective.PATH_SMOOTHNESS,
-    #     OptimizationObjective.HEIGHT_DIFFERENCE
-    #               ]
+    objectives = [
+        OptimizationObjective.ENCOUNTERED_OBSTACLES,
+        OptimizationObjective.OBSTACLE_PROXIMITY,
+        OptimizationObjective.OPTIMAL_FLIGHT_HEIGHT,
+        OptimizationObjective.FUEL_CONSUMPTION,
+        OptimizationObjective.PATH_LENGTH,
+        OptimizationObjective.PATH_SMOOTHNESS,
+        OptimizationObjective.OPTIMAL_HEIGHT_DEVIATION
+    ]
 
-    objectives = [OptimizationObjective.OBSTACLE_PROXIMITY, OptimizationObjective.OPTIMAL_HEIGHT_DEVIATION,
-                  OptimizationObjective.PATH_LENGTH, OptimizationObjective.PATH_SMOOTHNESS]
-    evolution = EvolutionEngine(no_uavs, no_generations, map, max_moves_length, visualize_all_steps, objectives)
+    uavs = [20, 50, 100, 200, 500, 750, 1000]
+    generations = [10, 25, 50, 75, 100]
+    algorithms = ["nsga2", "nsga3", "spea2"]
 
-    alg = None
-    for subobjectives_list in subobjectives:
-        evolution.init_uavs(subobjectives_list)
-
-        if config["algorithm"] == "nsga2":
-            alg = NSGA2(objectives, crossover_rate, mutation_rate, map, True)
-        elif config["algorithm"] == "nsga3":
-            alg = NSGA3(objectives, crossover_rate, mutation_rate, map, True)
-        elif config["algorithm"] == "spea2":
-            alg = SPEA2(objectives, crossover_rate, mutation_rate, map, evolution.uavs, int(0.3*no_uavs))
-
-        evolution.run(alg)
-
-    evolution.save_results(config["algorithm"] + '.csv', objectives)
-    evolution.visualize_uavs(alg.get_name(), no_generations, True)
+    for algorithm in algorithms:
+        for uav in uavs:
+            for generation in generations:
+                evolution = EvolutionEngine(uav, generation, map, max_moves_length, visualize_all_steps,
+                                            objectives)
+                run_evolution(evolution, algorithm, map, objectives, subobjectives, uav)
