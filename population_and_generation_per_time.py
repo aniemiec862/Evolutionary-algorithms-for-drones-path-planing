@@ -13,7 +13,7 @@ for algorithm in df_grouped['Algorithm'].unique():
     for population_size in subset_algorithm['Population Size'].unique():
         subset_population = subset_algorithm[subset_algorithm['Population Size'] == population_size]
         plt.plot(subset_population['Generations'], subset_population['Time'], marker='o', linestyle='--',
-                 label=f'Rozmiar populacji: {population_size}')
+                 label=f'Rozmiar populacji: {population_size}', linewidth=2, markersize=8)
 
     plt.title(f'{algorithm} - Średni czas trwania ewolucji modelu 3D w zależności od liczby generacji', fontsize=16)
     plt.xlabel('Liczba generacji', fontsize=14)
@@ -25,7 +25,7 @@ for algorithm in df_grouped['Algorithm'].unique():
     plt.xticks(x_ticks, fontsize=12)
 
     max_time_algorithm = subset_algorithm['Time'].max()
-    y_ticks = np.arange(start=0, stop=max_time_algorithm + 100, step=50)
+    y_ticks = np.arange(start=0, stop=max_time_algorithm + 50, step=50)
     plt.yticks(y_ticks, fontsize=12)
 
     plt.grid(True, which='both', axis='both', linestyle='--', linewidth=0.5)
