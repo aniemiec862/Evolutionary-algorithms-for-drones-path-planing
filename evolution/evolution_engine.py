@@ -36,6 +36,7 @@ class EvolutionEngine:
             self.run_generation(gen_id, algorithm)
 
         self.results.alg.append(algorithm.get_name())
+        self.results.generations.append(self.no_generations)
         self.results.times.append(time.time() - start)
         self.results.population_size.append(self.no_uavs)
         constants.final_uavs += self.uavs[:constants.final_uavs_per_path]
