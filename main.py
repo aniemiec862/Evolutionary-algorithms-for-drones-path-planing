@@ -24,7 +24,7 @@ def run_evolution(evolution, algorithm, map, objectives, subobjectives, no_uavs)
 
         evolution.run(alg)
 
-    evolution.save_results('2d_test.csv', objectives)
+    evolution.save_results('test_2d_params.csv', objectives)
     # evolution.visualize_uavs(alg.get_name(), no_generations, True)
 
 

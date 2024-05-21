@@ -15,7 +15,7 @@ for algorithm in df_filtered['Algorithm'].unique():
     plt.plot(subset_algorithm['Generations'], subset_algorithm['Time'], marker='o', linestyle='--',
              label=f'Algorytm: {algorithm}', linewidth=2, markersize=8)
 
-plt.title('Średni czas trwania ewolucji modelu 3D w zależności od liczby generacji dla populacji 100', fontsize=16)
+plt.title('Średni czas trwania ewolucji modelu 2D w zależności od liczby generacji dla populacji 100', fontsize=16)
 plt.xlabel('Liczba generacji', fontsize=14)
 plt.ylabel('Czas [s]', fontsize=14)
 plt.legend(fontsize=12)
