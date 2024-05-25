@@ -45,8 +45,8 @@ class Map:
         ax.set_xlim(0, self.width)
         ax.set_ylim(0, self.height)
 
-        ax.set_xlabel('szerokość [m]')
-        ax.set_ylabel('głębokość [m]')
+        ax.set_xlabel('szerokość [m]', fontsize=14)
+        ax.set_ylabel('głębokość [m]', fontsize=14)
 
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)
         ax.set_title(f'{alg_name}: generation {generation_id}, UAVS {constants.no_uavs}')
