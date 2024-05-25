@@ -70,29 +70,29 @@ class Map:
                 ax.set_ylim(0, self.depth)
                 ax.set_zlim(0, self.height)
 
-                ax.set_xlabel('width [m]')
-                ax.set_ylabel('depth [m]')
-                ax.set_zlabel('height [m]')
+        ax.set_xlabel('szerokość [m]', fontsize=14)
+        ax.set_ylabel('głębokość [m]', fontsize=14)
+        ax.set_zlabel('wysokość [m]', fontsize=14)
 
-                ax.set_title(f'{alg_name}: generation {generation_id}')
+        # ax.set_title(f'{alg_name}: generation {generation_id}')
 
-        additional_parameters = {
-            "Number of uavs": constants.no_uavs,
-            "Number of moves": len(uavs[0].moves),
-            "Path length [m]": uavs[0].distance
-        }
+        # additional_parameters = {
+        #     "Number of uavs": constants.no_uavs,
+        #     "Number of moves": len(uavs[0].moves),
+        #     "Path length [m]": uavs[0].distance
+        # }
 
-        vertical_position = 1.05 - len(additional_parameters) * 0.03
-
-        # Add text for keys (left-aligned)
-        for i, (key, _) in enumerate(additional_parameters.items()):
-            ax.text2D(0.70, vertical_position - i * 0.03, f"{key}:", transform=ax.transAxes, fontsize=10,
-                      verticalalignment='top', horizontalalignment='left')
-
-        # Add text for values (right-aligned)
-        for i, (_, value) in enumerate(additional_parameters.items()):
-            ax.text2D(1.05, vertical_position - i * 0.03, f"{value:>10}", transform=ax.transAxes, fontsize=10,
-                      verticalalignment='top', horizontalalignment='right')
+        # vertical_position = 1.05 - len(additional_parameters) * 0.03
+        #
+        # # Add text for keys (left-aligned)
+        # for i, (key, _) in enumerate(additional_parameters.items()):
+        #     ax.text2D(0.70, vertical_position - i * 0.03, f"{key}:", transform=ax.transAxes, fontsize=10,
+        #               verticalalignment='top', horizontalalignment='left')
+        #
+        # # Add text for values (right-aligned)
+        # for i, (_, value) in enumerate(additional_parameters.items()):
+        #     ax.text2D(1.05, vertical_position - i * 0.03, f"{value:>10}", transform=ax.transAxes, fontsize=10,
+        #               verticalalignment='top', horizontalalignment='right')
 
         return plt
 
