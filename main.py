@@ -22,7 +22,7 @@ def run_evolution(evolution, algorithm, map, objectives, subobjectives, no_uavs)
         elif algorithm == "spea2":
             alg = SPEA2(objectives, 0.9, 1 / no_uavs, map, evolution.uavs, int(0.3 * no_uavs))
 
-        evolution.run(alg)
+        # evolution.run(alg)
 
     evolution.save_results('2d_test.csv', objectives)
     # evolution.visualize_uavs(alg.get_name(), no_generations, True)
@@ -51,9 +51,13 @@ if __name__ == "__main__":
     objectives = [OptimizationObjective.ENCOUNTERED_OBSTACLES, OptimizationObjective.OBSTACLE_PROXIMITY,
                   OptimizationObjective.PATH_LENGTH, OptimizationObjective.PATH_SMOOTHNESS]
 
-    uavs = [20, 50, 100, 200, 500, 750, 1000]
-    generations = [10, 25, 50, 75, 100]
-    algorithms = ["nsga2", "nsga3", "spea2"]
+    # uavs = [20, 50, 100, 200, 500, 750, 1000]
+    # generations = [10, 25, 50, 75, 100]
+    # algorithms = ["nsga2", "nsga3", "spea2"]
+
+    uavs = [10]
+    generations = [1]
+    algorithms = ["nsga2"]
 
     for algorithm in algorithms:
         for uav in uavs:
