@@ -49,7 +49,7 @@ class Map:
         ax.set_ylabel('głębokość [m]', fontsize=18)
 
         ax.grid(True, which='both', linestyle='--', linewidth=1.0)
-        # ax.set_title(f'{alg_name}: generation {generation_id}, UAVS {constants.no_uavs}')
+        ax.set_title(f'{alg_name}: generacja {generation_id}, rozmiar populacji {constants.no_uavs}', fontsize=18)
 
         return plt
 
