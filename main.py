@@ -67,8 +67,16 @@ if __name__ == "__main__":
         OptimizationObjective.OPTIMAL_HEIGHT_DEVIATION
     ]
 
-    uavs = [20, 50, 100, 200, 500, 750, 1000]
-    generations = [10, 25, 50, 75, 100]
+    # uavs = [20, 50, 100, 200, 500, 750, 1000]
+    # generations = [10, 25, 50, 75, 100]
+    # algorithms = ["nsga2", "nsga3", "spea2"]
+
+    # uavs = [10]
+    # generations = [1]
+    # algorithms = ["nsga2"]
+
+    uavs = [1000]
+    generations = [50]
     algorithms = ["nsga2", "nsga3", "spea2"]
 
     for algorithm in algorithms:

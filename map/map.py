@@ -74,7 +74,7 @@ class Map:
         ax.set_ylabel('głębokość [m]', fontsize=14)
         ax.set_zlabel('wysokość [m]', fontsize=14)
 
-        # ax.set_title(f'{alg_name}: generation {generation_id}')
+        ax.set_title(f'{alg_name}: generacja {generation_id}, rozmiar populacji {constants.no_uavs}', fontsize=18)
 
         # additional_parameters = {
         #     "Number of uavs": constants.no_uavs,
