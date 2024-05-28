@@ -70,15 +70,15 @@ class Map:
         ax.set_ylim(0, self.depth)
         ax.set_zlim(0, self.height)
 
-        ax.set_xlabel('szerokość [m]', fontsize=14)
-        ax.set_ylabel('głębokość [m]', fontsize=14)
+        ax.set_xlabel('szerokość [m]', fontsize=14, labelpad=20)
+        ax.set_ylabel('głębokość [m]', fontsize=14, labelpad=20)
 
         if use_axis_above:
             ax.set_zlabel('')
             ax.set_zticks([])
             ax.view_init(elev=90, azim=-90)
         else:
-            ax.set_zlabel('wysokość [m]', fontsize=14)
+            ax.set_zlabel('wysokość [m]', fontsize=14, labelpad=20)
             ax.view_init(elev=40, azim=-30)
 
         ax.set_title(f'{alg_name}: generacja {generation_id}, rozmiar populacji {constants.no_uavs}', fontsize=18)
