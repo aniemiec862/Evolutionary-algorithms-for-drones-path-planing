@@ -39,7 +39,7 @@ class Map:
         z = np.ones_like(x) * h
         return x, y, z
 
-    def build_plot(self, alg_name, generation_id, uavs):
+    def build_plot(self, alg_name, generation_id, uavs, use_axis_above):
         color_mapping = {
             MapObjectType.START: "green",
             MapObjectType.OBJECTIVE: "blue",
@@ -66,16 +66,22 @@ class Map:
                 ax.plot(x, y, z, marker='o', linestyle='-', markersize=5, linewidth=3.0,
                         label='UAV Path', color=color_mapping[MapObjectType.UAV])
 
-                ax.set_xlim(0, self.width)
-                ax.set_ylim(0, self.depth)
-                ax.set_zlim(0, self.height)
+        ax.set_xlim(0, self.width)
+        ax.set_ylim(0, self.depth)
+        ax.set_zlim(0, self.height)
 
         ax.set_xlabel('szerokość [m]', fontsize=14)
         ax.set_ylabel('głębokość [m]', fontsize=14)
-        ax.set_zlabel('wysokość [m]', fontsize=14)
+
+        if use_axis_above:
+            ax.set_zlabel('')
+            ax.set_zticks([])
+            ax.view_init(elev=90, azim=-90)
+        else:
+            ax.set_zlabel('wysokość [m]', fontsize=14)
+            ax.view_init(elev=40, azim=-30)
 
         ax.set_title(f'{alg_name}: generacja {generation_id}, rozmiar populacji {constants.no_uavs}', fontsize=18)
-
         # additional_parameters = {
         #     "Number of uavs": constants.no_uavs,
         #     "Number of moves": len(uavs[0].moves),
@@ -97,11 +103,13 @@ class Map:
         return plt
 
     def visualize(self, alg_name, generation_id: int, uavs: list[MapUAV]):
-        plt = self.build_plot(alg_name, generation_id, uavs)
+        plt = self.build_plot(alg_name, generation_id, uavs, False)
+        plt.show()
+        plt = self.build_plot(alg_name, generation_id, uavs, True)
         plt.show()
 
     def save_to_image(self, alg_name, generation_id: int, uavs: list[MapUAV]):
-        plt = self.build_plot(alg_name, generation_id, uavs)
+        plt = self.build_plot(alg_name, generation_id, uavs, False)
         canvas = FigureCanvasAgg(plt.figure())
         canvas.draw()
         renderer = canvas.get_renderer()
