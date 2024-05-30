@@ -78,7 +78,7 @@ class Map:
             ax.set_zticks([])
             ax.view_init(elev=90, azim=-90)
         else:
-            ax.set_zlabel('wysokość [m]', fontsize=14, labelpad=20)
+            ax.set_zlabel('wysokość [m]', fontsize=14, labelpad=14)
             ax.view_init(elev=40, azim=-30)
 
         ax.set_title(f'{alg_name}: generacja {generation_id}, rozmiar populacji {constants.no_uavs}', fontsize=18)

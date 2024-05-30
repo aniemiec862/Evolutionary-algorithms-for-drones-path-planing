@@ -65,8 +65,8 @@ class UAV:
             return True
 
         for obstacle in self.obstacles:
-            if obstacle.is_point_inside(position) \
-                    or obstacle.does_move_intercourse_obstacle(self.position, position):
+            if obstacle.is_point_inside(position):
+                    # or obstacle.does_move_intercourse_obstacle(self.position, position):
                 return False
 
         for uav in constants.final_uavs:
