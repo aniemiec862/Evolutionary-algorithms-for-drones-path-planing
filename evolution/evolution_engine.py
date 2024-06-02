@@ -74,13 +74,13 @@ class EvolutionEngine:
         else:
             uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in self.uavs[:constants.final_uavs_per_path]]
 
-        p1 = [(4, 1, 8), (3, 5, 17), (10, 10, 20), (25, 25, 50), (36, 38, 66), (35, 42, 5), (40, 40, 75)]
-        p2 = [(3, 9, 6), (1, 25, 2), (8, 17, 28), (5, 20, 35), (1, 26, 48), (10, 45, 50), (30, 45, 75)]
-        p3 = [(10, 5, 5), (18, 6, 12), (20, 5, 25), (47, 2, 22), (45, 10, 50), (45, 30, 75)]
+        # p1 = [(4, 1, 8), (3, 5, 17), (10, 10, 20), (25, 25, 50), (36, 38, 66), (35, 42, 5), (40, 40, 75)]
+        # p2 = [(3, 9, 6), (1, 25, 2), (8, 17, 28), (5, 20, 35), (1, 26, 48), (10, 45, 50), (30, 45, 75)]
+        # p3 = [(10, 5, 5), (18, 6, 12), (20, 5, 25), (47, 2, 22), (45, 10, 50), (45, 30, 75)]
+        #
+        # all_points = [p1, p2, p3]
 
-        all_points = [p1, p2, p3]
-
-        uavs = self.create_map_uavs(all_points)
+        # uavs = self.create_map_uavs(all_points)
         self.map.visualize(algorithm_name, generation_id, uavs)
 
     def print_uavs(self):
