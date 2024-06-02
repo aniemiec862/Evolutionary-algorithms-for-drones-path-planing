@@ -25,8 +25,8 @@ def run_evolution(evolution, algorithm, map, objectives, subobjectives, no_uavs)
 
         evolution.run(alg)
 
-    evolution.save_results('3d_test.csv', objectives)
-    # evolution.visualize_uavs(alg.get_name(), no_generations, True)
+    evolution.save_results('multipoints_3d.csv', objectives)
+    evolution.visualize_uavs(alg.get_name(), no_generations, True)
 
 if __name__ == "__main__":
     with open('config.json') as f:
@@ -60,7 +60,6 @@ if __name__ == "__main__":
     objectives = [
         OptimizationObjective.ENCOUNTERED_OBSTACLES,
         OptimizationObjective.OBSTACLE_PROXIMITY,
-        OptimizationObjective.OPTIMAL_FLIGHT_HEIGHT,
         OptimizationObjective.FUEL_CONSUMPTION,
         OptimizationObjective.PATH_LENGTH,
         OptimizationObjective.PATH_SMOOTHNESS,
@@ -75,9 +74,9 @@ if __name__ == "__main__":
     # generations = [1]
     # algorithms = ["nsga2"]
 
-    uavs = [1000]
-    generations = [50]
-    algorithms = ["nsga2", "nsga3", "spea2"]
+    uavs = [500]
+    generations = [20]
+    algorithms = ["spea2"]
 
     for algorithm in algorithms:
         for uav in uavs:

@@ -8,6 +8,7 @@ from map.map_object import MapUAV, MapObject
 from uav.genotype import Genotype
 from uav.uav import UAV
 from utils import constants
+from utils.Point3d import Point3d
 from utils.Results import Results
 
 
@@ -56,16 +57,35 @@ class EvolutionEngine:
 
         self.uavs = algorithm.run_generation(self.uavs)
 
+    def create_map_uavs(self, list_of_points: [[(float, float, float)]]):
+        uavs = []
+        for points in list_of_points:
+            point_objects = [Point3d(x, y, z) for x, y, z in points]
+            point_objects.insert(0, self.map.start.position)
+            point_objects.append(self.map.objective.position)
+            uav = MapUAV(point_objects, 0)
+            uavs.append(uav)
+        return uavs
+
     def visualize_uavs(self, algorithm_name: string, generation_id: int, is_final_result: bool):
+        self.print_uavs()
         if is_final_result:
             uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in constants.final_uavs]
         else:
             uavs = [MapUAV(uav.get_moves(), uav.calculate_traveled_distance()) for uav in self.uavs[:constants.final_uavs_per_path]]
+
+        p1 = [(4, 1, 8), (3, 5, 17), (10, 10, 20), (25, 25, 50), (36, 38, 66), (35, 42, 5), (40, 40, 75)]
+        p2 = [(3, 9, 6), (1, 25, 2), (8, 17, 28), (5, 20, 35), (1, 26, 48), (10, 45, 50), (30, 45, 75)]
+        p3 = [(10, 5, 5), (18, 6, 12), (20, 5, 25), (47, 2, 22), (45, 10, 50), (45, 30, 75)]
+
+        all_points = [p1, p2, p3]
+
+        uavs = self.create_map_uavs(all_points)
         self.map.visualize(algorithm_name, generation_id, uavs)
 
     def print_uavs(self):
-        for uav in self.uavs:
-            coordinates = [(point.x, point.y) for point in uav.genotype.position_genes]
+        for uav in constants.final_uavs:
+            coordinates = [(point.x, point.y, point.z) for point in uav.genotype.position_genes]
             print(coordinates)
 
     def save_results(self, file_name: string, objectives: [OptimizationObjective]):

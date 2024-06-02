@@ -77,28 +77,12 @@ class Map:
             ax.set_zlabel('')
             ax.set_zticks([])
             ax.view_init(elev=90, azim=-90)
+            ax.set_title(f'{alg_name}: generacja {generation_id}, rozmiar populacji {constants.no_uavs}', fontsize=18, pad=-20)
         else:
             ax.set_zlabel('wysokość [m]', fontsize=14, labelpad=14)
             ax.view_init(elev=40, azim=-30)
 
-        ax.set_title(f'{alg_name}: generacja {generation_id}, rozmiar populacji {constants.no_uavs}', fontsize=18)
-        # additional_parameters = {
-        #     "Number of uavs": constants.no_uavs,
-        #     "Number of moves": len(uavs[0].moves),
-        #     "Path length [m]": uavs[0].distance
-        # }
-
-        # vertical_position = 1.05 - len(additional_parameters) * 0.03
-        #
-        # # Add text for keys (left-aligned)
-        # for i, (key, _) in enumerate(additional_parameters.items()):
-        #     ax.text2D(0.70, vertical_position - i * 0.03, f"{key}:", transform=ax.transAxes, fontsize=10,
-        #               verticalalignment='top', horizontalalignment='left')
-        #
-        # # Add text for values (right-aligned)
-        # for i, (_, value) in enumerate(additional_parameters.items()):
-        #     ax.text2D(1.05, vertical_position - i * 0.03, f"{value:>10}", transform=ax.transAxes, fontsize=10,
-        #               verticalalignment='top', horizontalalignment='right')
+            ax.set_title(f'{alg_name}: generacja {generation_id}, rozmiar populacji {constants.no_uavs}', fontsize=18)
 
         return plt
 
