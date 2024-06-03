@@ -31,7 +31,11 @@ class MapObject:
         return segment_to_object_center_distance <= self.radius
 
     def distance_to_point(self, point: Point3d):
-        distance = point.count_distance_flat(self.position) - self.radius  # should flat 2d distance be used instead?
+        distance = point.count_distance_flat(self.position) - self.radius
+        return max(0, distance) if not self.is_point_inside(point) else float('inf')
+
+    def distance_to_point_3d(self, point: Point3d):
+        distance = point.count_distance(self.position) - self.radius
         return max(0, distance) if not self.is_point_inside(point) else float('inf')
 
 class MapUAV:

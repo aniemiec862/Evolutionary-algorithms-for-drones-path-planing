@@ -112,5 +112,5 @@ class UAV:
         self.path_smoothness = sum(map(lambda angle: 180 - angle, angles_degrees)) if angles else 0
 
     def calculate_obstacle_proximity(self):
-        min_distance = min(obstacle.distance_to_point(self.position) for obstacle in self.obstacles)
+        min_distance = min(obstacle.distance_to_point_3d(self.position) for obstacle in self.obstacles)
         self.obstacle_proximity += math.exp(-0.2 * min_distance)
